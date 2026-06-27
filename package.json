@@ -1,0 +1,101 @@
+{
+  "name": "konoha-bridge",
+  "displayName": "Konoha Bridge",
+  "description": "Exposes the running Antigravity instance as a local OpenAI-compatible API on localhost:1313",
+  "version": "1.0.0",
+  "publisher": "andycungkrinx91",
+  "license": "MIT",
+  "icon": "./icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andycungkrinx91/konoha-bridge"
+  },
+  "homepage": "https://github.com/andycungkrinx91/konoha-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/andycungkrinx91/konoha-bridge/issues"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "antigravity",
+    "openai",
+    "opencode",
+    "claude",
+    "gemini",
+    "agent",
+    "llm",
+    "bridge",
+    "ai",
+    "provider",
+    "proxy"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./src/extension.js",
+  "scripts": {
+    "test": "node --require ./test/setup.js --test test/*.test.js",
+    "lint": "eslint src/ test/",
+    "lint:fix": "eslint src/ test/ --fix",
+    "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\" \"*.json\" \"*.md\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"test/**/*.js\" \"*.json\" \"*.md\"",
+    "dev:deploy": "pwsh scripts/dev-deploy.ps1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.6.0",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.0"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.12.1"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "AG Local Bridge",
+      "properties": {
+        "agLocalBridge.port": {
+          "type": "number",
+          "default": 1313,
+          "description": "Port for the local OpenAI-compatible HTTP API server"
+        },
+        "agLocalBridge.logRequests": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Verbose Logging (writes text logs to Output/konoha-bridge.log, and formatted JSON objects to %TEMP%/konoha-bridge-payloads.log)"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "agLocalBridge.start",
+        "title": "AG Local Bridge: Start Server"
+      },
+      {
+        "command": "agLocalBridge.stop",
+        "title": "AG Local Bridge: Stop Server"
+      },
+      {
+        "command": "agLocalBridge.showStatus",
+        "title": "AG Local Bridge: Show Status"
+      },
+      {
+        "command": "agLocalBridge.listModels",
+        "title": "AG Local Bridge: List Available LM Models"
+      },
+      {
+        "command": "agLocalBridge.listCommands",
+        "title": "AG Local Bridge: List Available Chat Commands (Debug)"
+      },
+      {
+        "command": "agLocalBridge.probeSidecar",
+        "title": "AG Local Bridge: Probe Sidecar Connection"
+      }
+    ]
+  }
+}

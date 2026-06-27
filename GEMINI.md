@@ -1,0 +1,223 @@
+# konoha-bridge — AI Agent Instructions
+
+This file is loaded automatically by AI coding assistants (Gemini, Claude, Cursor, etc.)
+and defines the conventions that **must be followed** when making changes to this project.
+
+## Critical: Before Every Commit
+
+**Always run all three checks in order before staging any changes:**
+
+```bash
+npm run format       # 1. Auto-fix formatting (Prettier)
+npm run lint         # 2. Check for lint errors (ESLint)
+npm test             # 3. Run all tests (node:test)
+```
+
+Or as a single pipeline:
+
+```bash
+npm run format && npm run lint && npm test
+```
+
+> **Never skip formatting.** The CI runs `format:check` and will fail if files aren't
+> formatted. `npm run format` is non-destructive and safe to run at any time.
+
+## All Available Scripts
+
+| Command                | What it does                                                      |
+| ---------------------- | ----------------------------------------------------------------- |
+| `npm test`             | Run all tests with Node's built-in test runner                    |
+| `npm run lint`         | ESLint over `src/` and `test/`                                    |
+| `npm run lint:fix`     | ESLint with auto-fix                                              |
+| `npm run format`       | Prettier write (auto-fixes all files)                             |
+| `npm run format:check` | Prettier check only (what CI runs)                                |
+| `npm run dev:deploy`   | Deploy source to local Antigravity extension (Windows/PowerShell) |
+
+## Code Style
+
+Enforced by **Prettier** (`.prettierrc`) and **ESLint** (`eslint.config.js`).
+
+Key rules:
+
+- Single quotes, trailing commas, semicolons
+- 2-space indent, 120-char print width, LF line endings
+- `no-unused-vars` → **warn** (prefix with `_` to suppress: `_unused`)
+- `eqeqeq` → **error** (always use `===`)
+- All files must be `'use strict';` at the top
+
+**Unused imports in new files will produce lint warnings** — remove them before committing.
+
+## Project Structure
+
+Always update this structure when files are changed.
+
+```
+src/
+  extension.js          # VS Code extension entry point
+  context.js            # Shared bridge context object
+  server.js             # HTTP server setup
+  utils.js              # Shared helpers (buildStreamChunk, extractText, log, …)
+  models.js             # Model enum → display name mapping + resolveModel()
+  images.js             # Image extraction from request content
+  workspace.js          # VS Code workspace helpers
+  handlers/
+    openai.js           # POST /v1/chat/completions  (OpenAI format)
+    anthropic.js        # POST /v1/messages + /v1/messages/count_tokens  (Anthropic format)
+    gemini.js           # POST /v1beta/models/:model:generateContent  (Gemini native format)
+    models.js           # GET /v1/models
+    proxy.js            # Generic proxy fallback
+    debug.js            # Debug/status endpoints
+  interceptors/
+    http-server.js      # HTTP/1.1 interception
+    https.js            # HTTPS interception
+    h2.js               # HTTP/2 interception
+  sidecar/
+    discovery.js        # Cross-platform sidecar process discovery
+    rpc.js              # HTTP/2 JSON RPC calls to sidecar
+    cascade.js          # Cascade (chat) RPC helpers
+    proto.js            # Binary protobuf encoding (minimal descriptors)
+    raw.js              # Raw LLM inference (GetModelResponse bypass)
+test/
+  setup.js              # Global test setup (VS Code mock loader)
+  __mocks__/vscode.js   # VS Code API mock
+  *.test.js             # Tests — all use node:test (describe/it/assert)
+scripts/
+  dev-deploy.ps1        # Local dev deployment script (Windows)
+  probe-sidecar.js      # Standalone sidecar RPC probe (dev/debug)
+.agents/workflows/
+  dev-deploy.md         # /dev-deploy workflow instructions
+```
+
+## Testing Conventions
+
+- Use **Node's built-in test runner** (`node:test`) — no Jest, no Mocha.
+- Import pattern:
+  ```js
+  const { describe, it } = require('node:test');
+  const assert = require('node:assert/strict');
+  ```
+- Tests live in `test/*.test.js` and are auto-discovered by `npm test`.
+- Mock VS Code API via `test/__mocks__/vscode.js` (loaded by `test/setup.js`).
+- **Do not use `console.assert`** — use `assert` from `node:assert/strict`.
+
+## Logging Conventions
+
+Two logging helpers live in `src/utils.js`:
+
+| Helper                 | When to use                                                              |
+| ---------------------- | ------------------------------------------------------------------------ |
+| `log(ctx, msg)`        | Essential operational info (cascade created, request dispatched, errors) |
+| `verboseLog(ctx, msg)` | Payloads, polling ticks, workspace switches, debug detail                |
+
+`verboseLog` is **gated behind the `agLocalBridge.logRequests` setting** — it produces
+no output unless the user explicitly opts in.
+
+Key rules:
+
+- **Never write logs to files** (`fs.appendFileSync`, `fs.writeFileSync` for logs) — all
+  logging goes through the VS Code Output channel only.
+- **Never use `console.log`** — use `log()` or `verboseLog()`.
+- **Never dump full request/response bodies** in `log()` — use `verboseLog()` for those.
+
+## Architecture Notes
+
+### Sidecar Discovery (`src/sidecar/discovery.js`)
+
+Finds the running `language_server_*` process and extracts ports, CSRF tokens,
+and cert path. Platform strategies:
+
+- **Windows**: `powershell.exe Get-CimInstance Win32_Process` + `netstat -ano`
+- **macOS**: `/bin/ps aux` + `lsof -iTCP -sTCP:LISTEN`
+- **Linux**: `/bin/ps aux` + `ss -tlnp`
+
+Binary names per platform:
+
+```js
+win32: ['language_server_windows_x64.exe'];
+darwin: ['language_server_macos_arm', 'language_server_macos'];
+linux: ['language_server_linux'];
+```
+
+### Raw Inference Mode (`src/sidecar/raw.js`)
+
+Bypasses Cascade entirely — calls `GetModelResponse` directly on the sidecar.
+
+- Formats OpenAI messages into a flat prompt string with role labels
+- Parses `<tool_call>{...}</tool_call>` blocks back into OpenAI `tool_calls` format
+- Timeout: **15 minutes** (LLM inference can be very slow)
+- Model enum values: `MODEL_PLACEHOLDER_M18` (Flash), `MODEL_GEMINI_3_5_FLASH_MEDIUM` (3.5 Flash Medium),
+  `MODEL_GEMINI_3_5_FLASH_HIGH` (3.5 Flash High), `MODEL_GEMINI_3_5_FLASH_LOW` (3.5 Flash Low),
+  `MODEL_PLACEHOLDER_M16` (Pro High), `MODEL_PLACEHOLDER_M36` (Pro Low), `MODEL_PLACEHOLDER_M35` (Sonnet),
+  `MODEL_PLACEHOLDER_M26` (Opus), `MODEL_OPENAI_GPT_OSS_120B_MEDIUM` (GPT-OSS 120B)
+- **Auth re-discovery**: On `PERMISSION_DENIED` / `401` / `403` in the raw response body,
+  `ctx.sidecarInfo` is cleared to force re-discovery on the next request (handles CSRF rotation).
+
+### RPC (`src/sidecar/rpc.js`)
+
+All sidecar calls use HTTP/2 + Connect protocol over `https://localhost:<port>`.
+`makeH2JsonCall(port, csrf, certPath, method, body, retries, timeoutMs)`
+
+- Default timeout: 10 000 ms
+- For `GetModelResponse`: pass `timeoutMs = 120000`
+
+### CI Pipeline (`.github/workflows/publish.yml`)
+
+Triggers on every push to `master` or `beta`. Two jobs:
+
+1. **check**: `npm ci` → `lint` → `format:check` → `test`
+2. **publish**: auto-versions as `1.1.<run_number>` → packages VSIX → publishes to Open VSX
+
+Branch behaviour:
+
+| Branch   | `vsce package` flag | `ovsx publish` flag | Result          |
+| -------- | ------------------- | ------------------- | --------------- |
+| `beta`   | `--pre-release`     | `--pre-release`     | **Pre-release** |
+| `master` | _(none)_            | _(none)_            | **Stable**      |
+
+Version scheme: `1.1.{github.run_number}` — update the `1.1` prefix in the workflow
+whenever the base version in `package.json` changes.
+
+### Branching Strategy
+
+- **`beta`** is the **default branch**. All PRs should target `beta`.
+- **`master`** is protected (requires PR). Merge `beta → master` to cut a stable release.
+
+### Multi-Protocol API Support
+
+All three endpoints delegate to the same `callRawInference()` path — the handlers only
+convert the request/response format.
+
+#### OpenAI (`src/handlers/chat.js`)
+
+- `POST /v1/chat/completions` — standard OpenAI Chat Completions format
+- `GET /v1/models` — lists available models
+
+#### Anthropic (`src/handlers/anthropic.js`)
+
+- `POST /v1/messages` — full Anthropic Messages API (streaming + non-streaming)
+  - Converts `tool_use` / `tool_result` blocks ↔ OpenAI `tool_calls` / `tool` messages
+  - Returns proper Anthropic SSE event stream: `message_start`, `content_block_*`, `message_delta`, `message_stop`
+- `POST /v1/messages/count_tokens` — preflight mock (returns `{"input_tokens": 0}`)
+  - Required by Claude CLI and Cherry Studio before every conversation
+
+#### Gemini (`src/handlers/gemini.js`)
+
+- `POST /v1beta/models/:model:generateContent` — Gemini native format
+- `POST /v1beta/models/:model:streamGenerateContent` — streaming variant
+- Accepts `x-goog-api-key` header (no Authorization header needed)
+- Strips `:generateContent` / `:streamGenerateContent` operation suffix from path
+- Converts `contents[].parts[].text` ↔ OpenAI messages, `functionDeclarations` ↔ OpenAI tools
+
+### Model ID Aliases
+
+`src/models.js` supports both the full `antigravity-*` prefixed IDs (shown in `/v1/models`)
+and short-form aliases (hidden from model list) for compatibility with other tools:
+
+| Short alias                | Full ID                    | Enum value |
+| -------------------------- | -------------------------- | ---------- |
+| `claude-sonnet-4-6`        | `claude-sonnet-4-6`        | 1035       |
+| `claude-opus-4-6-thinking` | `claude-opus-4-6-thinking` | 1026       |
+| `gemini-3.1-pro-high`      | `gemini-3.1-pro-high`      | 1037       |
+| `gemini-3.1-pro-low`       | `gemini-3.1-pro-low`       | 1036       |
+| `gemini-3.5-flash-medium`  | `gemini-3.5-flash-medium`  | 1043       |
+| `gpt-oss-120b-medium`      | `gpt-oss-120b`             | 342        |
