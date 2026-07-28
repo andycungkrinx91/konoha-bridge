@@ -219,5 +219,7 @@ and short-form aliases (hidden from model list) for compatibility with other too
 | `claude-opus-4-6-thinking` | `claude-opus-4-6-thinking` | 1026       |
 | `gemini-3.1-pro-high`      | `gemini-3.1-pro-high`      | 1037       |
 | `gemini-3.1-pro-low`       | `gemini-3.1-pro-low`       | 1036       |
-| `gemini-3.5-flash-medium`  | `gemini-3.5-flash-medium`  | 1043       |
+| `gemini-3.6-flash-medium`  | `gemini-3.6-flash-medium`  | 1046       |
+| `gemini-3.6-flash-high`    | `gemini-3.6-flash-high`    | 1047       |
+| `gemini-3.6-flash-low`     | `gemini-3.6-flash-low`     | 1048       |
 | `gpt-oss-120b-medium`      | `gpt-oss-120b`             | 342        |

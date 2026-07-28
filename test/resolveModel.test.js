@@ -7,9 +7,9 @@ const { resolveModel, MODEL_MAP, DEFAULT_MODEL_KEY } = require('../src/models');
 describe('resolveModel', () => {
   // ── Exact match ──
   it('resolves exact model key', () => {
-    const result = resolveModel('gemini-3.5-flash-medium');
-    assert.equal(result.key, 'gemini-3.5-flash-medium');
-    assert.equal(result.value, 1018);
+    const result = resolveModel('gemini-3.6-flash-medium');
+    assert.equal(result.key, 'gemini-3.6-flash-medium');
+    assert.equal(result.value, 1046);
     assert.equal(result.owned_by, 'google');
   });
 
@@ -34,8 +34,8 @@ describe('resolveModel', () => {
   });
 
   it('resolves partial match — model key is substring of input', () => {
-    const result = resolveModel('gemini-3.5-flash-medium-latest');
-    assert.equal(result.key, 'gemini-3.5-flash-medium');
+    const result = resolveModel('gemini-3.6-flash-medium-latest');
+    assert.equal(result.key, 'gemini-3.6-flash-medium');
   });
 
   it('resolves case-insensitive partial match', () => {
@@ -104,46 +104,34 @@ describe('resolveModel', () => {
     assert.equal(result.value, 342);
   });
 
-  // ── New Gemini 3.5 Flash models ──
-  it('resolves gemini-3.5-flash-medium', () => {
-    const result = resolveModel('gemini-3.5-flash-medium');
-    assert.equal(result.key, 'gemini-3.5-flash-medium');
-    assert.equal(result.value, 1018);
+  it('resolves gemini-3.6-flash-medium', () => {
+    const result = resolveModel('gemini-3.6-flash-medium');
+    assert.equal(result.key, 'gemini-3.6-flash-medium');
+    assert.equal(result.value, 1046);
     assert.equal(result.owned_by, 'google');
   });
 
-  it('resolves gemini-3.5-flash-high', () => {
-    const result = resolveModel('gemini-3.5-flash-high');
-    assert.equal(result.key, 'gemini-3.5-flash-high');
-    assert.equal(result.value, 1018);
+  it('resolves gemini-3.6-flash-high', () => {
+    const result = resolveModel('gemini-3.6-flash-high');
+    assert.equal(result.key, 'gemini-3.6-flash-high');
+    assert.equal(result.value, 1047);
   });
 
-  it('resolves gemini-3.5-flash-low', () => {
-    const result = resolveModel('gemini-3.5-flash-low');
-    assert.equal(result.key, 'gemini-3.5-flash-low');
-    assert.equal(result.value, 1018);
+  it('resolves gemini-3.6-flash-low', () => {
+    const result = resolveModel('gemini-3.6-flash-low');
+    assert.equal(result.key, 'gemini-3.6-flash-low');
+    assert.equal(result.value, 1048);
   });
 
-  it('resolves short-form alias gemini-3.5-flash-medium', () => {
-    const result = resolveModel('gemini-3.5-flash-medium');
-    assert.equal(result.value, 1018);
-    assert.equal(result.owned_by, 'google');
+  it('resolves alias antigravity-gemini-3.6-flash-medium', () => {
+    const result = resolveModel('antigravity-gemini-3.6-flash-medium');
+    assert.equal(result.value, 1046);
   });
 
-  it('resolves short-form alias gemini-3.5-flash-high', () => {
-    const result = resolveModel('gemini-3.5-flash-high');
-    assert.equal(result.value, 1018);
-  });
-
-  it('resolves short-form alias gemini-3.5-flash-low', () => {
-    const result = resolveModel('gemini-3.5-flash-low');
-    assert.equal(result.value, 1018);
-  });
-
-  // ── Default is now Gemini 3.5 Flash Medium ──
-  it('antigravity alias resolves to gemini-3.5-flash-medium as default', () => {
+  // ── Default is now Gemini 3.6 Flash Medium ──
+  it('antigravity alias resolves to gemini-3.6-flash-medium as default', () => {
     const result = resolveModel('antigravity');
-    assert.equal(result.key, 'gemini-3.5-flash-medium');
-    assert.equal(result.value, 1018);
+    assert.equal(result.key, 'gemini-3.6-flash-medium');
+    assert.equal(result.value, 1046);
   });
 });

@@ -13,7 +13,7 @@ function createContext() {
   return {
     // Identity (for Metadata proto payloads)
     sessionId: randomUUID() + Date.now().toString(),
-    extensionVersion: '1.0.0',
+    extensionVersion: '1.1.0',
 
     // VS Code UI
     /** @type {import('vscode').OutputChannel | null} */

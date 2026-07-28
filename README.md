@@ -34,10 +34,10 @@ Use your Antigravity subscription directly with any tool that speaks OpenAI — 
 ## ⚡ How it Works
 
 ```mermaid
-graph LR
-    A["Your Tool (opencode / curl)"] -->|HTTP :1313| B["Konoha Bridge Extension"]
-    B -->|ConnectRPC / HTTP/2| C["Antigravity Sidecar"]
-    C -->|Authenticated API| D["Cloud AI Models"]
+flowchart LR
+    A["Your Tool<br/>(opencode / curl)"] -->|"HTTP :1313"| B["Konoha Bridge Extension"]
+    B -->|"ConnectRPC / HTTP/2"| C["Antigravity Sidecar"]
+    C -->|"Authenticated API"| D["Cloud AI Models"]
 ```
 
 The extension runs inside Antigravity's process, discovers the sidecar via process inspection across Linux, Windows, and macOS, intercepts CSRF tokens from internal traffic, and proxies your requests through the authenticated sidecar channel.
@@ -59,9 +59,9 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 | Model ID                   | Provider  | Description                     | Context Window   |
 | :------------------------- | :-------- | :------------------------------ | :--------------- |
-| `gemini-3.5-flash-medium`  | Google    | Gemini 3.5 Flash (Medium) Fast  | 1,048,576 tokens |
-| `gemini-3.5-flash-high`    | Google    | Gemini 3.5 Flash (High) Fast    | 1,048,576 tokens |
-| `gemini-3.5-flash-low`     | Google    | Gemini 3.5 Flash (Low) Fast     | 1,048,576 tokens |
+| `gemini-3.6-flash-medium`  | Google    | Gemini 3.6 Flash (Medium) Fast  | 1,048,576 tokens |
+| `gemini-3.6-flash-high`    | Google    | Gemini 3.6 Flash (High) Fast    | 1,048,576 tokens |
+| `gemini-3.6-flash-low`     | Google    | Gemini 3.6 Flash (Low) Fast     | 1,048,576 tokens |
 | `gemini-3.1-pro-high`      | Google    | Gemini 3.1 Pro — High thinking  | 1,048,576 tokens |
 | `gemini-3.1-pro-low`       | Google    | Gemini 3.1 Pro — Low thinking   | 1,048,576 tokens |
 | `claude-sonnet-4-6`        | Anthropic | Claude Sonnet 4.6 with Thinking | 200,000 tokens   |
@@ -78,13 +78,13 @@ To run your live customized repository directly inside Antigravity IDE:
 
 ```bash
 # Linux
-ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.0.0-universal
+ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.1.0-universal
 
 # macOS
-ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.0.0-universal
+ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.1.0-universal
 
 # Windows (PowerShell Administrator)
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity-ide\extensions\andycungkrinx91.konoha-bridge-1.0.0-universal" -Target "C:\path\to\konoha-bridge"
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity-ide\extensions\andycungkrinx91.konoha-bridge-1.1.0-universal" -Target "C:\path\to\konoha-bridge"
 ```
 
 Then reload Antigravity IDE (`Ctrl+Shift+P` → _Developer: Reload Window_).
@@ -106,18 +106,18 @@ Add the complete configuration to `~/.config/opencode/opencode.json` (or `%USERP
         "apiKey": "local"
       },
       "models": {
-        "gemini-3.5-flash-medium": {
-          "name": "Gemini 3.5 Flash Medium (Antigravity)",
+        "gemini-3.6-flash-medium": {
+          "name": "Gemini 3.6 Flash Medium (Antigravity)",
           "modalities": { "input": ["text", "image"], "output": ["text"] },
           "limit": { "context": 1048576, "output": 65536 }
         },
-        "gemini-3.5-flash-high": {
-          "name": "Gemini 3.5 Flash High (Antigravity)",
+        "gemini-3.6-flash-high": {
+          "name": "Gemini 3.6 Flash High (Antigravity)",
           "modalities": { "input": ["text", "image"], "output": ["text", "image"] },
           "limit": { "context": 1048576, "output": 65536 }
         },
-        "gemini-3.5-flash-low": {
-          "name": "Gemini 3.5 Flash Low (Antigravity)",
+        "gemini-3.6-flash-low": {
+          "name": "Gemini 3.6 Flash Low (Antigravity)",
           "modalities": { "input": ["text", "image"], "output": ["text"] },
           "limit": { "context": 1048576, "output": 65536 }
         },
@@ -201,7 +201,7 @@ curl -N http://localhost:1313/v1/chat/completions \
 curl http://localhost:1313/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "gemini-3.5-flash-medium",
+    "model": "gemini-3.6-flash-medium",
     "messages": [
       {
         "role": "user",
@@ -222,7 +222,7 @@ curl http://localhost:1313/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "x-workspace-dir: /home/user/my-project" \
   -d '{
-    "model": "gemini-3.5-flash-medium",
+    "model": "gemini-3.6-flash-medium",
     "messages": [
       {"role": "user", "content": "List the main dependencies in package.json"}
     ],

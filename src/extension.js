@@ -76,6 +76,7 @@ function activate(context) {
 function deactivate() {
   httpsInterceptor.uninstall(ctx);
   httpServerInterceptor.uninstall(ctx);
+  h2Interceptor.uninstall(ctx);
   stopServer(ctx);
 }
 

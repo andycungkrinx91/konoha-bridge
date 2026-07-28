@@ -5,6 +5,23 @@ All notable changes to the **Konoha Bridge** extension will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-28
+
+### ⚡ Automatic Startup & Installation Improvements
+
+- **Auto-Start Activation**: Added `"onStartupFinished"` to `activationEvents` in `package.json` to guarantee instant server startup on port `1313`.
+- **Standalone Antigravity IDE Support**: Configured full compatibility for standalone binary installations (`~/.local/share/antigravity-ide/`).
+
+### 🐛 Bug Fixes & Improvements
+
+- **HTTP/2 Interceptor Teardown**: Added missing `h2Interceptor.uninstall(ctx)` call in `deactivate()` to guarantee clean uninstallation of HTTP/2 network patches upon extension reload.
+- **Model Registry Cleanup**: Removed legacy `gemini-3.5-flash-*` entries. Updated default model fallback to `gemini-3.6-flash-medium`.
+- **Settings & Documentation**: Fixed Mermaid architecture diagram syntax and updated documentation across `README.md`, `GEMINI.md`, and `CLAUDE.md`.
+
+### ✨ New Features & Enhancements
+
+- **Gemini 3.6 Flash Models**: Added full support for `gemini-3.6-flash-medium` (1046), `gemini-3.6-flash-high` (1047), and `gemini-3.6-flash-low` (1048) across OpenAI, Anthropic, and Gemini API handlers.
+
 ## [1.0.0] - 2026-06-28
 
 ### 🍃 Initial Release of Konoha Bridge Fork

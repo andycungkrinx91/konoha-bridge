@@ -29,7 +29,6 @@ $extBase = "$env:USERPROFILE\.antigravity\extensions"
 # Find ALL installed extension directories (handles multiple versions)
 $candidates = @()
 $candidates += Get-ChildItem $extBase -Directory -Filter "*konoha-bridge*" -ErrorAction SilentlyContinue
-$candidates += Get-ChildItem $extBase -Directory -Filter "antigravity-bridge*" -ErrorAction SilentlyContinue
 $candidates = $candidates | Select-Object -Unique
 
 if ($candidates.Count -eq 0) {

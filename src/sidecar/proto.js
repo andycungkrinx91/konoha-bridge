@@ -90,6 +90,9 @@ const commonProto = create(FileDescriptorProtoSchema, {
       MODEL_GEMINI_3_5_FLASH_MEDIUM: 1043,
       MODEL_GEMINI_3_5_FLASH_HIGH: 1044,
       MODEL_GEMINI_3_5_FLASH_LOW: 1045,
+      MODEL_GEMINI_3_6_FLASH_MEDIUM: 1046,
+      MODEL_GEMINI_3_6_FLASH_HIGH: 1047,
+      MODEL_GEMINI_3_6_FLASH_LOW: 1048,
       MODEL_OPENAI_GPT_OSS_120B_MEDIUM: 342,
     }),
     makeEnum('ConversationalPlannerMode', {

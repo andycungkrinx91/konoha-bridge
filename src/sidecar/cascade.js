@@ -79,6 +79,9 @@ async function callSidecarChat(
       await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
     }
 
+    if (!ctx.cascadePromises) ctx.cascadePromises = new Map();
+    if (!ctx.activeCascades) ctx.activeCascades = new Map();
+
     // --- CONVERSATION MULTIPLEXING ---
     if (ctx.cascadePromises.has(convKey)) {
       vlog(`  ♻️ Awaiting concurrent cascade creation for conv: ${convKey.replace(/\n/g, '')}...`);

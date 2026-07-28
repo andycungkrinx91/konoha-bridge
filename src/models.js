@@ -6,23 +6,23 @@
 
 const MODEL_MAP = {
   // Main Antigravity models
-  'gemini-3.5-flash-medium': {
-    value: 1018,
-    name: 'Gemini 3.5 Flash (Medium) Fast',
+  'gemini-3.6-flash-medium': {
+    value: 1046,
+    name: 'Gemini 3.6 Flash (Medium) Fast',
     owned_by: 'google',
     context: 1048576,
     output: 65536,
   },
-  'gemini-3.5-flash-high': {
-    value: 1018,
-    name: 'Gemini 3.5 Flash (High) Fast',
+  'gemini-3.6-flash-high': {
+    value: 1047,
+    name: 'Gemini 3.6 Flash (High) Fast',
     owned_by: 'google',
     context: 1048576,
     output: 65536,
   },
-  'gemini-3.5-flash-low': {
-    value: 1018,
-    name: 'Gemini 3.5 Flash (Low) Fast',
+  'gemini-3.6-flash-low': {
+    value: 1048,
+    name: 'Gemini 3.6 Flash (Low) Fast',
     owned_by: 'google',
     context: 1048576,
     output: 65536,
@@ -104,25 +104,25 @@ const MODEL_MAP = {
     output: 16384,
     hidden: true,
   },
-  'antigravity-gemini-3.5-flash-medium': {
-    value: 1018,
-    name: 'Gemini 3.5 Flash (Medium) Fast',
+  'antigravity-gemini-3.6-flash-medium': {
+    value: 1046,
+    name: 'Gemini 3.6 Flash (Medium) Fast',
     owned_by: 'google',
     context: 1048576,
     output: 65536,
     hidden: true,
   },
-  'antigravity-gemini-3.5-flash-high': {
-    value: 1018,
-    name: 'Gemini 3.5 Flash (High) Fast',
+  'antigravity-gemini-3.6-flash-high': {
+    value: 1047,
+    name: 'Gemini 3.6 Flash (High) Fast',
     owned_by: 'google',
     context: 1048576,
     output: 65536,
     hidden: true,
   },
-  'antigravity-gemini-3.5-flash-low': {
-    value: 1018,
-    name: 'Gemini 3.5 Flash (Low) Fast',
+  'antigravity-gemini-3.6-flash-low': {
+    value: 1048,
+    name: 'Gemini 3.6 Flash (Low) Fast',
     owned_by: 'google',
     context: 1048576,
     output: 65536,
@@ -146,7 +146,7 @@ const MODEL_MAP = {
   },
 };
 
-const DEFAULT_MODEL_KEY = 'gemini-3.5-flash-medium';
+const DEFAULT_MODEL_KEY = 'gemini-3.6-flash-medium';
 
 function resolveModel(requestedModel) {
   if (!requestedModel || requestedModel === 'antigravity') {
