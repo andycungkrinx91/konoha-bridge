@@ -82,4 +82,12 @@ function install(ctx) {
   }
 }
 
-module.exports = { install };
+function uninstall(ctx) {
+  // The H2 interceptor wraps session.request on individual sessions — there's no
+  // global hook to restore.  We clear captured payloads here so stale debug data
+  // doesn't leak across extension reloads.
+  ctx.capturedPayloads = [];
+  log(ctx, `🔌 H2 interceptor cleaned up`);
+}
+
+module.exports = { install, uninstall };

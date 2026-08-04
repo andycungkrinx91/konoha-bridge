@@ -78,13 +78,13 @@ To run your live customized repository directly inside Antigravity IDE:
 
 ```bash
 # Linux
-ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.1.0-universal
+ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.2.0-universal
 
 # macOS
-ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.1.0-universal
+ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.2.0-universal
 
 # Windows (PowerShell Administrator)
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity-ide\extensions\andycungkrinx91.konoha-bridge-1.1.0-universal" -Target "C:\path\to\konoha-bridge"
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity-ide\extensions\andycungkrinx91.konoha-bridge-1.2.0-universal" -Target "C:\path\to\konoha-bridge"
 ```
 
 Then reload Antigravity IDE (`Ctrl+Shift+P` → _Developer: Reload Window_).

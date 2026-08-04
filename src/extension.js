@@ -12,7 +12,7 @@
 
 const vscode = require('vscode');
 const { createContext } = require('./context');
-const { log } = require('./utils');
+const { log, updateStatusBar } = require('./utils');
 const httpsInterceptor = require('./interceptors/https');
 const httpServerInterceptor = require('./interceptors/http-server');
 const h2Interceptor = require('./interceptors/h2');
@@ -52,7 +52,35 @@ function activate(context) {
   );
 
   log(ctx, 'Extension activated. Starting server...');
-  startServer(ctx).catch((err) => log(ctx, `Startup error: ${err.message}`, true));
+
+  // Start with an immediate attempt, then retry with exponential backoff if it fails.
+  // This handles the race where the sidecar process hasn't finished initializing yet.
+  let startupAttempt = 0;
+  const MAX_STARTUP_RETRIES = 12;
+  const STARTUP_RETRY_BASE_MS = 2000;
+
+  async function attemptStart() {
+    try {
+      await startServer(ctx);
+      startupAttempt = 0; // Reset counter on success
+      log(ctx, `✅ Server started successfully on attempt ${startupAttempt + 1}`);
+    } catch (err) {
+      startupAttempt++;
+      if (startupAttempt > MAX_STARTUP_RETRIES) {
+        log(ctx, `❌ Server failed to start after ${MAX_STARTUP_RETRIES} attempts: ${err.message}`, true);
+        updateStatusBar(ctx, false);
+        return;
+      }
+      const delay = STARTUP_RETRY_BASE_MS * Math.pow(2, startupAttempt - 1);
+      log(
+        ctx,
+        `⏳ Server startup attempt ${startupAttempt}/${MAX_STARTUP_RETRIES} failed: ${err.message}. Retrying in ${delay / 1000}s...`,
+      );
+      setTimeout(attemptStart, delay);
+    }
+  }
+
+  attemptStart();
 
   // Prune stale activeCascades entries every 30 minutes
   const CASCADE_MAX_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours

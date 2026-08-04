@@ -5,6 +5,18 @@ All notable changes to the **Konoha Bridge** extension will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-08-01
+
+### 🐛 Bug Fixes
+
+- **Startup Race Condition**: Server now retries with exponential backoff (up to 12 attempts) when the sidecar isn't ready yet, fixing the issue where the bridge never started listening on first launch.
+- **H2 Interceptor Teardown**: Added missing `h2Interceptor.uninstall(ctx)` to prevent `TypeError` on extension reload — `deactivate()` now correctly calls `uninstall()`.
+
+### ✨ Improvements
+
+- Added startup retry logging so users can see retry attempts in the output channel.
+- H2 interceptor now clears captured payloads on teardown to prevent stale debug data across reloads.
+
 ## [1.1.0] - 2026-07-28
 
 ### ⚡ Automatic Startup & Installation Improvements
