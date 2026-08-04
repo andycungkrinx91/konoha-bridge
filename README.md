@@ -72,7 +72,29 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 ## 📦 Installation
 
-### Live Development Symlink (Recommended)
+### Option 1: Install VSIX Package (Recommended for Users)
+
+#### Via Command Line (CLI):
+
+```bash
+# Antigravity IDE CLI
+antigravity --install-extension konoha-bridge-1.2.0.vsix
+
+# Standard VS Code CLI
+code --install-extension konoha-bridge-1.2.0.vsix
+```
+
+#### Via IDE Interface (GUI):
+
+1. Download `konoha-bridge-1.2.0.vsix` from the [Latest Release](https://github.com/andycungkrinx91/konoha-bridge/releases).
+2. Open Antigravity / VS Code.
+3. Open Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
+4. Click the **`...`** (Views and More Actions) menu in the top-right corner.
+5. Select **Install from VSIX...** and choose `konoha-bridge-1.2.0.vsix`.
+
+---
+
+### Option 2: Live Development Symlink (For Developers)
 
 To run your live customized repository directly inside Antigravity IDE:
 
@@ -86,6 +108,8 @@ ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoh
 # Windows (PowerShell Administrator)
 New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity-ide\extensions\andycungkrinx91.konoha-bridge-1.2.0-universal" -Target "C:\path\to\konoha-bridge"
 ```
+
+Or run `npm run dev:deploy` on Windows to auto-deploy local changes to installed extension directories.
 
 Then reload Antigravity IDE (`Ctrl+Shift+P` → _Developer: Reload Window_).
 
