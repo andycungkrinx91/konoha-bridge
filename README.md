@@ -289,6 +289,23 @@ curl http://localhost:1313/v1/chat/completions \
 
 ---
 
+## 💻 Development & Testing
+
+Konoha Bridge includes a lightweight, zero-dependency unit test suite executed with Node's native test runner:
+
+```bash
+# Run 125+ automated unit tests
+npm test
+
+# Format and lint check
+npm run format && npm run lint
+```
+
+- **Test Suite Coverage**: 125+ unit tests across 16 suites covering Anthropic/Gemini/OpenAI handlers, cross-platform sidecar discovery (Linux/Win/macOS), model resolution & aliases, multimodal image extraction, and SSE stream formatting.
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for local symlink setup and coding standards.
+
+---
+
 ## 📜 License & Credits
 
 This project is licensed under the [MIT License](LICENSE).

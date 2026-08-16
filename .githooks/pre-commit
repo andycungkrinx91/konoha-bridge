@@ -1,0 +1,32 @@
+#!/bin/sh
+# Local pre-commit hook for konoha-bridge
+# Runs formatting check, linting, and unit tests before every commit.
+
+# Skip gracefully if npm is not available in current environment/PATH
+if ! command -v npm >/dev/null 2>&1; then
+  echo "⚠️ 'npm' command not found in PATH — skipping local pre-commit checks."
+  exit 0
+fi
+
+echo "🔍 Running local pre-commit checks..."
+
+npm run format:check
+if [ $? -ne 0 ]; then
+  echo "❌ Prettier formatting check failed. Run 'npm run format' to auto-fix."
+  exit 1
+fi
+
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "❌ ESLint check failed. Please fix lint errors before committing."
+  exit 1
+fi
+
+npm test
+if [ $? -ne 0 ]; then
+  echo "❌ Unit tests failed. Please ensure all tests pass before committing."
+  exit 1
+fi
+
+echo "✅ All local pre-commit checks passed!"
+exit 0

@@ -45,7 +45,8 @@
     "lint:fix": "eslint src/ test/ --fix",
     "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\" \"*.json\" \"*.md\"",
     "format:check": "prettier --check \"src/**/*.js\" \"test/**/*.js\" \"*.json\" \"*.md\"",
-    "dev:deploy": "pwsh scripts/dev-deploy.ps1"
+    "dev:deploy": "pwsh scripts/dev-deploy.ps1",
+    "prepare": "node scripts/setup-hooks.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

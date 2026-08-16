@@ -20,6 +20,8 @@ CHANGELOG.md
 # Dev config & tests (not needed at runtime)
 test/**
 scripts/**
+.githooks/**
+CONTRIBUTING.md
 eslint.config.js
 .prettierrc
 .prettierignore
