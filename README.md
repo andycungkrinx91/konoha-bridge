@@ -59,6 +59,9 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 | Model ID                   | Provider  | Description                     | Context Window   |
 | :------------------------- | :-------- | :------------------------------ | :--------------- |
+| `gemini-3.7-flash-medium`  | Google    | Gemini 3.7 Flash (Medium) Fast  | 1,048,576 tokens |
+| `gemini-3.7-flash-high`    | Google    | Gemini 3.7 Flash (High) Fast    | 1,048,576 tokens |
+| `gemini-3.7-flash-low`     | Google    | Gemini 3.7 Flash (Low) Fast     | 1,048,576 tokens |
 | `gemini-3.6-flash-medium`  | Google    | Gemini 3.6 Flash (Medium) Fast  | 1,048,576 tokens |
 | `gemini-3.6-flash-high`    | Google    | Gemini 3.6 Flash (High) Fast    | 1,048,576 tokens |
 | `gemini-3.6-flash-low`     | Google    | Gemini 3.6 Flash (Low) Fast     | 1,048,576 tokens |
@@ -78,19 +81,23 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 ```bash
 # Antigravity IDE CLI
-antigravity --install-extension konoha-bridge-1.2.0.vsix
+antigravity --install-extension konoha-bridge-1.3.0.vsix
 
 # Standard VS Code CLI
-code --install-extension konoha-bridge-1.2.0.vsix
+code --install-extension konoha-bridge-1.3.0.vsix
+
+# Cursor IDE CLI
+cursor --install-extension konoha-bridge-1.3.0.vsix
 ```
 
 #### Via IDE Interface (GUI):
 
-1. Download `konoha-bridge-1.2.0.vsix` from the [Latest Release](https://github.com/andycungkrinx91/konoha-bridge/releases).
-2. Open Antigravity / VS Code.
-3. Open Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
-4. Click the **`...`** (Views and More Actions) menu in the top-right corner.
-5. Select **Install from VSIX...** and choose `konoha-bridge-1.2.0.vsix`.
+1. Download or locate `konoha-bridge-1.3.0.vsix` (from the repo root or [Releases](https://github.com/andycungkrinx91/konoha-bridge/releases)).
+2. Open Antigravity / VS Code / Cursor.
+3. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
+4. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions panel.
+5. Select **Install from VSIX...** and choose `konoha-bridge-1.3.0.vsix`.
+6. Reload the window (`Ctrl+Shift+P` → `Developer: Reload Window`).
 
 ---
 
@@ -100,13 +107,13 @@ To run your live customized repository directly inside Antigravity IDE:
 
 ```bash
 # Linux
-ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.2.0-universal
+ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-master-universal
 
 # macOS
-ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-1.2.0-universal
+ln -s /path/to/konoha-bridge ~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-master-universal
 
 # Windows (PowerShell Administrator)
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity-ide\extensions\andycungkrinx91.konoha-bridge-1.2.0-universal" -Target "C:\path\to\konoha-bridge"
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity-ide\extensions\andycungkrinx91.konoha-bridge-master-universal" -Target "C:\path\to\konoha-bridge"
 ```
 
 Or run `npm run dev:deploy` on Windows to auto-deploy local changes to installed extension directories.
@@ -130,6 +137,21 @@ Add the complete configuration to `~/.config/opencode/opencode.json` (or `%USERP
         "apiKey": "local"
       },
       "models": {
+        "gemini-3.7-flash-medium": {
+          "name": "Gemini 3.7 Flash Medium (Antigravity)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 65536 }
+        },
+        "gemini-3.7-flash-high": {
+          "name": "Gemini 3.7 Flash High (Antigravity)",
+          "modalities": { "input": ["text", "image"], "output": ["text", "image"] },
+          "limit": { "context": 1048576, "output": 65536 }
+        },
+        "gemini-3.7-flash-low": {
+          "name": "Gemini 3.7 Flash Low (Antigravity)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 65536 }
+        },
         "gemini-3.6-flash-medium": {
           "name": "Gemini 3.6 Flash Medium (Antigravity)",
           "modalities": { "input": ["text", "image"], "output": ["text"] },

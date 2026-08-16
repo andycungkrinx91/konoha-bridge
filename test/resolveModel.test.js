@@ -128,6 +128,30 @@ describe('resolveModel', () => {
     assert.equal(result.value, 1046);
   });
 
+  it('resolves gemini-3.7-flash-medium', () => {
+    const result = resolveModel('gemini-3.7-flash-medium');
+    assert.equal(result.key, 'gemini-3.7-flash-medium');
+    assert.equal(result.value, 1049);
+    assert.equal(result.owned_by, 'google');
+  });
+
+  it('resolves gemini-3.7-flash-high', () => {
+    const result = resolveModel('gemini-3.7-flash-high');
+    assert.equal(result.key, 'gemini-3.7-flash-high');
+    assert.equal(result.value, 1050);
+  });
+
+  it('resolves gemini-3.7-flash-low', () => {
+    const result = resolveModel('gemini-3.7-flash-low');
+    assert.equal(result.key, 'gemini-3.7-flash-low');
+    assert.equal(result.value, 1051);
+  });
+
+  it('resolves alias antigravity-gemini-3.7-flash-medium', () => {
+    const result = resolveModel('antigravity-gemini-3.7-flash-medium');
+    assert.equal(result.value, 1049);
+  });
+
   // ── Default is now Gemini 3.6 Flash Medium ──
   it('antigravity alias resolves to gemini-3.6-flash-medium as default', () => {
     const result = resolveModel('antigravity');

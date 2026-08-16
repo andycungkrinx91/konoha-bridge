@@ -19,6 +19,9 @@ const VALUE_TO_MODEL_ENUM = {
   1046: 'MODEL_GEMINI_3_6_FLASH_MEDIUM', // Gemini 3.6 Flash Medium
   1047: 'MODEL_GEMINI_3_6_FLASH_HIGH', // Gemini 3.6 Flash High
   1048: 'MODEL_GEMINI_3_6_FLASH_LOW', // Gemini 3.6 Flash Low
+  1049: 'MODEL_GEMINI_3_7_FLASH_MEDIUM', // Gemini 3.7 Flash Medium
+  1050: 'MODEL_GEMINI_3_7_FLASH_HIGH', // Gemini 3.7 Flash High
+  1051: 'MODEL_GEMINI_3_7_FLASH_LOW', // Gemini 3.7 Flash Low
 };
 
 // ─────────────────────────────────────────────

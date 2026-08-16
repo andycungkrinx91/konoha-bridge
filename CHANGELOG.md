@@ -5,6 +5,13 @@ All notable changes to the **Konoha Bridge** extension will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-08-16
+
+### ✨ New Features & Enhancements
+
+- **Gemini 3.7 Flash Models**: Added full support for `gemini-3.7-flash-medium` (1049), `gemini-3.7-flash-high` (1050), and `gemini-3.7-flash-low` (1051) across OpenAI (`/v1/chat/completions`), Anthropic (`/v1/messages`), and Gemini (`/v1beta/models/*`) API handlers, including `opencode` templates and backward compatibility aliases.
+- **Master Development Symlink**: Standardized development symlink path to `~/.antigravity-ide/extensions/andycungkrinx91.konoha-bridge-master-universal`.
+
 ## [1.2.0] - 2026-08-01
 
 ### 🐛 Bug Fixes

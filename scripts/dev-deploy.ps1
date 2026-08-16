@@ -24,15 +24,22 @@ if ($PSScriptRoot -and (Test-Path (Join-Path (Split-Path -Parent $PSScriptRoot) 
     exit 1
 }
 
-$extBase = "$env:USERPROFILE\.antigravity\extensions"
+$extBases = @(
+    "$env:USERPROFILE\.antigravity-ide\extensions",
+    "$env:USERPROFILE\.antigravity\extensions"
+)
 
-# Find ALL installed extension directories (handles multiple versions)
+# Find ALL installed extension directories (handles multiple versions and master-universal)
 $candidates = @()
-$candidates += Get-ChildItem $extBase -Directory -Filter "*konoha-bridge*" -ErrorAction SilentlyContinue
+foreach ($base in $extBases) {
+    if (Test-Path $base) {
+        $candidates += Get-ChildItem $base -Directory -Filter "*konoha-bridge*" -ErrorAction SilentlyContinue
+    }
+}
 $candidates = $candidates | Select-Object -Unique
 
 if ($candidates.Count -eq 0) {
-    Write-Error "No konoha-bridge extension found in $extBase"
+    Write-Error "No konoha-bridge extension found in $($extBases -join ' or ')"
     exit 1
 }
 

@@ -6,6 +6,27 @@
 
 const MODEL_MAP = {
   // Main Antigravity models
+  'gemini-3.7-flash-medium': {
+    value: 1049,
+    name: 'Gemini 3.7 Flash (Medium) Fast',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+  },
+  'gemini-3.7-flash-high': {
+    value: 1050,
+    name: 'Gemini 3.7 Flash (High) Fast',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+  },
+  'gemini-3.7-flash-low': {
+    value: 1051,
+    name: 'Gemini 3.7 Flash (Low) Fast',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+  },
   'gemini-3.6-flash-medium': {
     value: 1046,
     name: 'Gemini 3.6 Flash (Medium) Fast',
@@ -102,6 +123,30 @@ const MODEL_MAP = {
     owned_by: 'openai',
     context: 128000,
     output: 16384,
+    hidden: true,
+  },
+  'antigravity-gemini-3.7-flash-medium': {
+    value: 1049,
+    name: 'Gemini 3.7 Flash (Medium) Fast',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+    hidden: true,
+  },
+  'antigravity-gemini-3.7-flash-high': {
+    value: 1050,
+    name: 'Gemini 3.7 Flash (High) Fast',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+    hidden: true,
+  },
+  'antigravity-gemini-3.7-flash-low': {
+    value: 1051,
+    name: 'Gemini 3.7 Flash (Low) Fast',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
     hidden: true,
   },
   'antigravity-gemini-3.6-flash-medium': {
