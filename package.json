@@ -5,7 +5,7 @@
   "version": "1.3.0",
   "publisher": "andycungkrinx91",
   "license": "MIT",
-  "icon": "./icon.png",
+  "icon": "assets/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/andycungkrinx91/konoha-bridge"

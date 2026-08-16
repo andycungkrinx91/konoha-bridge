@@ -11,6 +11,7 @@
 
 # Dev/design assets (large files not needed at runtime)
 assets/**
+!assets/icon.png
 bridge-debug.log
 
 # Docs already shown on Marketplace from README
