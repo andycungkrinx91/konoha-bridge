@@ -22,6 +22,10 @@
   <img src="https://img.shields.io/badge/OS-Linux%20|%20Windows%20|%20macOS-informational?style=for-the-badge&logo=linux&logoColor=white" alt="Multi-OS">
 </p>
 
+<p align="center">
+  <img src="assets/screenshot.png" alt="Konoha Bridge Screenshot" width="850">
+</p>
+
 ---
 
 > [!NOTE]
