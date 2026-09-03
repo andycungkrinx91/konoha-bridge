@@ -31,6 +31,7 @@ npm run format && npm run lint && npm test
 | `npm run lint:fix`     | ESLint with auto-fix                                              |
 | `npm run format`       | Prettier write (auto-fixes all files)                             |
 | `npm run format:check` | Prettier check only (what CI runs)                                |
+| `npm run package`      | Package extension into a .vsix archive using vsce                 |
 | `npm run dev:deploy`   | Deploy source to local Antigravity extension (Windows/PowerShell) |
 
 ## Code Style
@@ -59,6 +60,7 @@ src/
   utils.js              # Shared helpers (buildStreamChunk, extractText, log, …)
   models.js             # Model enum → display name mapping + resolveModel()
   images.js             # Image extraction from request content
+  sanitize.js           # Request payload sanitization & context compression
   workspace.js          # VS Code workspace helpers
   handlers/
     openai.js           # POST /v1/chat/completions  (OpenAI format)
@@ -150,6 +152,8 @@ Bypasses Cascade entirely — calls `GetModelResponse` directly on the sidecar.
   `MODEL_GEMINI_3_6_FLASH_MEDIUM` (3.6 Flash Medium), `MODEL_GEMINI_3_6_FLASH_HIGH` (3.6 Flash High),
   `MODEL_GEMINI_3_6_FLASH_LOW` (3.6 Flash Low), `MODEL_GEMINI_3_7_FLASH_MEDIUM` (3.7 Flash Medium),
   `MODEL_GEMINI_3_7_FLASH_HIGH` (3.7 Flash High), `MODEL_GEMINI_3_7_FLASH_LOW` (3.7 Flash Low),
+  `MODEL_GEMINI_3_8_FLASH_MEDIUM` (3.8 Flash Medium), `MODEL_GEMINI_3_8_FLASH_HIGH` (3.8 Flash High),
+  `MODEL_GEMINI_3_8_FLASH_LOW` (3.8 Flash Low),
   `MODEL_PLACEHOLDER_M16` (Pro High), `MODEL_PLACEHOLDER_M36` (Pro Low), `MODEL_PLACEHOLDER_M35` (Sonnet),
   `MODEL_PLACEHOLDER_M26` (Opus), `MODEL_OPENAI_GPT_OSS_120B_MEDIUM` (GPT-OSS 120B)
 - **Auth re-discovery**: On `PERMISSION_DENIED` / `401` / `403` in the raw response body,
@@ -222,10 +226,13 @@ and short-form aliases (hidden from model list) for compatibility with other too
 | `claude-opus-4-6-thinking` | `claude-opus-4-6-thinking` | 1026       |
 | `gemini-3.1-pro-high`      | `gemini-3.1-pro-high`      | 1037       |
 | `gemini-3.1-pro-low`       | `gemini-3.1-pro-low`       | 1036       |
-| `gemini-3.7-flash-medium`  | `gemini-3.7-flash-medium`  | 1049       |
+| `gemini-3.8-flash-high`    | `gemini-3.8-flash-high`    | 1053       |
+| `gemini-3.8-flash-medium`  | `gemini-3.8-flash-medium`  | 1052       |
+| `gemini-3.8-flash-low`     | `gemini-3.8-flash-low`     | 1054       |
 | `gemini-3.7-flash-high`    | `gemini-3.7-flash-high`    | 1050       |
+| `gemini-3.7-flash-medium`  | `gemini-3.7-flash-medium`  | 1049       |
 | `gemini-3.7-flash-low`     | `gemini-3.7-flash-low`     | 1051       |
-| `gemini-3.6-flash-medium`  | `gemini-3.6-flash-medium`  | 1046       |
 | `gemini-3.6-flash-high`    | `gemini-3.6-flash-high`    | 1047       |
+| `gemini-3.6-flash-medium`  | `gemini-3.6-flash-medium`  | 1046       |
 | `gemini-3.6-flash-low`     | `gemini-3.6-flash-low`     | 1048       |
-| `gpt-oss-120b-medium`      | `gpt-oss-120b`             | 342        |
+| `gpt-oss-120b`             | `gpt-oss-120b-medium`      | 342        |

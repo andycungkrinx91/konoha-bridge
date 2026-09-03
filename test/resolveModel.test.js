@@ -152,6 +152,72 @@ describe('resolveModel', () => {
     assert.equal(result.value, 1049);
   });
 
+  // ── Gemini 3.8 Flash tests ──
+  it('resolves gemini-3.8-flash-medium', () => {
+    const result = resolveModel('gemini-3.8-flash-medium');
+    assert.equal(result.key, 'gemini-3.8-flash-medium');
+    assert.equal(result.value, 1052);
+    assert.equal(result.name, 'Gemini 3.8 Flash (Medium)');
+    assert.equal(result.owned_by, 'google');
+  });
+
+  it('resolves gemini-3.8-flash-high', () => {
+    const result = resolveModel('gemini-3.8-flash-high');
+    assert.equal(result.key, 'gemini-3.8-flash-high');
+    assert.equal(result.value, 1053);
+    assert.equal(result.name, 'Gemini 3.8 Flash (High)');
+    assert.equal(result.owned_by, 'google');
+  });
+
+  it('resolves gemini-3.8-flash-low', () => {
+    const result = resolveModel('gemini-3.8-flash-low');
+    assert.equal(result.key, 'gemini-3.8-flash-low');
+    assert.equal(result.value, 1054);
+    assert.equal(result.name, 'Gemini 3.8 Flash (Low)');
+    assert.equal(result.owned_by, 'google');
+  });
+
+  it('resolves alias antigravity-gemini-3.8-flash-high', () => {
+    const result = resolveModel('antigravity-gemini-3.8-flash-high');
+    assert.equal(result.value, 1053);
+  });
+
+  it('resolves alias antigravity-gemini-3.8-flash-medium', () => {
+    const result = resolveModel('antigravity-gemini-3.8-flash-medium');
+    assert.equal(result.value, 1052);
+  });
+
+  it('resolves alias antigravity-gemini-3.8-flash-low', () => {
+    const result = resolveModel('antigravity-gemini-3.8-flash-low');
+    assert.equal(result.value, 1054);
+  });
+
+  it('visible models match the 14 Antigravity models exactly', () => {
+    const visibleKeys = Object.entries(MODEL_MAP)
+      .filter(([, m]) => !m.hidden)
+      .map(([k]) => k);
+    const expected = [
+      'gemini-3.8-flash-high',
+      'gemini-3.8-flash-medium',
+      'gemini-3.8-flash-low',
+      'gemini-3.7-flash-high',
+      'gemini-3.7-flash-medium',
+      'gemini-3.7-flash-low',
+      'gemini-3.6-flash-high',
+      'gemini-3.6-flash-medium',
+      'gemini-3.6-flash-low',
+      'gemini-3.1-pro-high',
+      'gemini-3.1-pro-low',
+      'claude-sonnet-4-6',
+      'claude-opus-4-6-thinking',
+      'gpt-oss-120b-medium',
+    ];
+    assert.equal(visibleKeys.length, expected.length);
+    for (const key of expected) {
+      assert.ok(visibleKeys.includes(key), `Expected ${key} to be visible`);
+    }
+  });
+
   // ── Default is now Gemini 3.6 Flash Medium ──
   it('antigravity alias resolves to gemini-3.6-flash-medium as default', () => {
     const result = resolveModel('antigravity');

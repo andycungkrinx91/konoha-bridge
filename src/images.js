@@ -80,9 +80,12 @@ function extractImages(ctx, content) {
     } else if (url.startsWith('file:///') || url.startsWith('file:\\\\\\\\')) {
       // Local file URI — read from disk
       try {
-        const filePath = url.startsWith('file:///')
+        const isWindowsDrive = /^file:\/\/\/[a-zA-Z]:/.test(url);
+        const filePath = isWindowsDrive
           ? url.slice(8).replace(/\//g, path.sep) // file:///C:/foo → C:\foo
-          : url.slice(8);
+          : url.startsWith('file:///')
+            ? url.slice(7)
+            : url.replace(/^file:[\\/]+/, '');
         const data = fs.readFileSync(filePath);
         const ext = path.extname(filePath).toLowerCase();
         const mimeMap = {

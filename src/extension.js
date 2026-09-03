@@ -62,8 +62,8 @@ function activate(context) {
   async function attemptStart() {
     try {
       await startServer(ctx);
-      startupAttempt = 0; // Reset counter on success
       log(ctx, `✅ Server started successfully on attempt ${startupAttempt + 1}`);
+      startupAttempt = 0; // Reset counter on success
     } catch (err) {
       startupAttempt++;
       if (startupAttempt > MAX_STARTUP_RETRIES) {

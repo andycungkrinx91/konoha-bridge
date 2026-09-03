@@ -39,9 +39,9 @@ Use your Antigravity subscription directly with any tool that speaks OpenAI — 
 
 ```mermaid
 flowchart LR
-    A["Your Tool<br/>(opencode / curl)"] -->|"HTTP :1313"| B["Konoha Bridge Extension"]
-    B -->|"ConnectRPC / HTTP/2"| C["Antigravity Sidecar"]
-    C -->|"Authenticated API"| D["Cloud AI Models"]
+    A["Your Tool (opencode / Claude CLI / curl)"] -->|HTTP :1313| B["Konoha Bridge Extension"]
+    B -->|ConnectRPC / HTTP/2| C["Antigravity Sidecar"]
+    C -->|Authenticated API| D["Cloud AI Models (Gemini, Claude, GPT-OSS)"]
 ```
 
 The extension runs inside Antigravity's process, discovers the sidecar via process inspection across Linux, Windows, and macOS, intercepts CSRF tokens from internal traffic, and proxies your requests through the authenticated sidecar channel.
@@ -50,11 +50,11 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 ## ✨ Features
 
-- 🎯 **OpenAI-compatible API** — Drop-in replacement for any tool expecting OpenAI standard endpoints.
-- 🖼️ **Image & Vision Support** — Paste screenshots or attach images from OpenAI clients; images are saved to temp files and referenced for agent inspection.
-- 📁 **Workspace-Aware** — Automatically detects and sets project context via `x-workspace-dir` / `x-workspace-uri` headers.
+- 🎯 **Multi-Protocol API Support** — Emulates standard OpenAI (`/v1/chat/completions`, `/v1/models`), Anthropic Messages (`/v1/messages`), and Google Gemini native (`/v1beta/models/*`) API endpoints.
+- 🖼️ **Image & Vision Support** — Full multimodal capabilities: supports base64 inline images, remote URLs, and local `file:///` URIs.
+- 📁 **Workspace-Aware** — Automatically detects and sets project context via `x-workspace-dir` / `x-workspace-uri` headers and prompt heuristics.
 - 🔄 **Conversation Multiplexing** — Reuses active Cascade conversations efficiently with automatic backoff retry on capacity limits.
-- ⚡ **Streaming & Non-Streaming** — Real-time Server-Sent Events (SSE) streaming and full JSON payload completions.
+- ⚡ **Streaming & Non-Streaming** — Real-time Server-Sent Events (SSE) streaming and full JSON payload completions across all protocol handlers.
 - 🛡️ **Cross-OS Native** — Auto-discovers sidecar processes seamlessly on Linux, Windows, and macOS.
 
 ---
@@ -63,17 +63,20 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 | Model ID                   | Provider  | Description                     | Context Window   |
 | :------------------------- | :-------- | :------------------------------ | :--------------- |
-| `gemini-3.7-flash-medium`  | Google    | Gemini 3.7 Flash (Medium) Fast  | 1,048,576 tokens |
-| `gemini-3.7-flash-high`    | Google    | Gemini 3.7 Flash (High) Fast    | 1,048,576 tokens |
-| `gemini-3.7-flash-low`     | Google    | Gemini 3.7 Flash (Low) Fast     | 1,048,576 tokens |
-| `gemini-3.6-flash-medium`  | Google    | Gemini 3.6 Flash (Medium) Fast  | 1,048,576 tokens |
-| `gemini-3.6-flash-high`    | Google    | Gemini 3.6 Flash (High) Fast    | 1,048,576 tokens |
-| `gemini-3.6-flash-low`     | Google    | Gemini 3.6 Flash (Low) Fast     | 1,048,576 tokens |
+| `gemini-3.8-flash-high`    | Google    | Gemini 3.8 Flash (High)         | 1,048,576 tokens |
+| `gemini-3.8-flash-medium`  | Google    | Gemini 3.8 Flash (Medium)       | 1,048,576 tokens |
+| `gemini-3.8-flash-low`     | Google    | Gemini 3.8 Flash (Low)          | 1,048,576 tokens |
+| `gemini-3.7-flash-high`    | Google    | Gemini 3.7 Flash (High)         | 1,048,576 tokens |
+| `gemini-3.7-flash-medium`  | Google    | Gemini 3.7 Flash (Medium)       | 1,048,576 tokens |
+| `gemini-3.7-flash-low`     | Google    | Gemini 3.7 Flash (Low)          | 1,048,576 tokens |
+| `gemini-3.6-flash-high`    | Google    | Gemini 3.6 Flash (High)         | 1,048,576 tokens |
+| `gemini-3.6-flash-medium`  | Google    | Gemini 3.6 Flash (Medium)       | 1,048,576 tokens |
+| `gemini-3.6-flash-low`     | Google    | Gemini 3.6 Flash (Low)          | 1,048,576 tokens |
 | `gemini-3.1-pro-high`      | Google    | Gemini 3.1 Pro — High thinking  | 1,048,576 tokens |
 | `gemini-3.1-pro-low`       | Google    | Gemini 3.1 Pro — Low thinking   | 1,048,576 tokens |
 | `claude-sonnet-4-6`        | Anthropic | Claude Sonnet 4.6 with Thinking | 200,000 tokens   |
 | `claude-opus-4-6-thinking` | Anthropic | Claude Opus 4.6 with Thinking   | 200,000 tokens   |
-| `gpt-oss-120b`             | OpenAI    | GPT-OSS 120B Medium             | 128,000 tokens   |
+| `gpt-oss-120b-medium`      | OpenAI    | GPT-OSS 120B Medium             | 128,000 tokens   |
 
 ---
 
@@ -85,22 +88,22 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 ```bash
 # Antigravity IDE CLI
-antigravity --install-extension konoha-bridge-1.3.0.vsix
+antigravity --install-extension konoha-bridge-1.4.0.vsix
 
 # Standard VS Code CLI
-code --install-extension konoha-bridge-1.3.0.vsix
+code --install-extension konoha-bridge-1.4.0.vsix
 
 # Cursor IDE CLI
-cursor --install-extension konoha-bridge-1.3.0.vsix
+cursor --install-extension konoha-bridge-1.4.0.vsix
 ```
 
 #### Via IDE Interface (GUI):
 
-1. Download or locate `konoha-bridge-1.3.0.vsix` (from the repo root or [Releases](https://github.com/andycungkrinx91/konoha-bridge/releases)).
+1. Download or locate `konoha-bridge-1.4.0.vsix` (from the repo root or [Releases](https://github.com/andycungkrinx91/konoha-bridge/releases)).
 2. Open Antigravity / VS Code / Cursor.
 3. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 4. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions panel.
-5. Select **Install from VSIX...** and choose `konoha-bridge-1.3.0.vsix`.
+5. Select **Install from VSIX...** and choose `konoha-bridge-1.4.0.vsix`.
 6. Reload the window (`Ctrl+Shift+P` → `Developer: Reload Window`).
 
 ---
@@ -141,6 +144,21 @@ Add the complete configuration to `~/.config/opencode/opencode.json` (or `%USERP
         "apiKey": "local"
       },
       "models": {
+        "gemini-3.8-flash-high": {
+          "name": "Gemini 3.8 Flash High (Antigravity)",
+          "modalities": { "input": ["text", "image"], "output": ["text", "image"] },
+          "limit": { "context": 1048576, "output": 65536 }
+        },
+        "gemini-3.8-flash-medium": {
+          "name": "Gemini 3.8 Flash Medium (Antigravity)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 65536 }
+        },
+        "gemini-3.8-flash-low": {
+          "name": "Gemini 3.8 Flash Low (Antigravity)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 65536 }
+        },
         "gemini-3.7-flash-medium": {
           "name": "Gemini 3.7 Flash Medium (Antigravity)",
           "modalities": { "input": ["text", "image"], "output": ["text"] },
@@ -202,7 +220,7 @@ Add the complete configuration to `~/.config/opencode/opencode.json` (or `%USERP
 }
 ```
 
-Then in `opencode`, select model identifiers formatted as `konoha-bridge/<model_id>` (e.g. `konoha-bridge/gemini-3.5-flash-medium` or `konoha-bridge/claude-sonnet-4-6`).
+Then in `opencode`, select model identifiers formatted as `konoha-bridge/<model_id>` (e.g. `konoha-bridge/gemini-3.8-flash-high` or `konoha-bridge/claude-sonnet-4-6`).
 
 ---
 
@@ -284,12 +302,17 @@ curl http://localhost:1313/v1/chat/completions \
 
 ## 🛠️ API Endpoints
 
-| Method | Path                   | Description                                 |
-| :----- | :--------------------- | :------------------------------------------ |
-| `GET`  | `/v1/models`           | List available models                       |
-| `POST` | `/v1/chat/completions` | Chat completion (streaming & non-streaming) |
-| `POST` | `/v1/proxy`            | Forward arbitrary RPC to sidecar            |
-| `GET`  | `/v1/debug`            | Debug info (sidecar ports, CSRF, captures)  |
+| Method | Path                                            | Protocol  | Description                                        |
+| :----- | :---------------------------------------------- | :-------- | :------------------------------------------------- |
+| `GET`  | `/v1/models` (or `/models`)                     | OpenAI    | List available models                              |
+| `POST` | `/v1/chat/completions` (or `/chat/completions`) | OpenAI    | Chat completion (streaming & non-streaming)        |
+| `POST` | `/v1/messages`                                  | Anthropic | Anthropic Messages API (streaming & non-streaming) |
+| `POST` | `/v1/messages/count_tokens`                     | Anthropic | Token count preflight mock (Claude CLI & Cherry)   |
+| `POST` | `/v1beta/models/:model:generateContent`         | Gemini    | Gemini native content generation                   |
+| `POST` | `/v1beta/models/:model:streamGenerateContent`   | Gemini    | Gemini native streaming content generation         |
+| `POST` | `/v1/proxy`                                     | RPC       | Forward arbitrary RPC to sidecar                   |
+| `GET`  | `/v1/debug`                                     | Debug     | Debug info (sidecar ports, CSRF, captures)         |
+| `GET`  | `/v1/captures`                                  | Debug     | Inspect intercepted sidecar payloads               |
 
 ---
 
@@ -298,14 +321,14 @@ curl http://localhost:1313/v1/chat/completions \
 Konoha Bridge includes a lightweight, zero-dependency unit test suite executed with Node's native test runner:
 
 ```bash
-# Run 125+ automated unit tests
+# Run 132 automated unit tests
 npm test
 
 # Format and lint check
 npm run format && npm run lint
 ```
 
-- **Test Suite Coverage**: 125+ unit tests across 16 suites covering Anthropic/Gemini/OpenAI handlers, cross-platform sidecar discovery (Linux/Win/macOS), model resolution & aliases, multimodal image extraction, and SSE stream formatting.
+- **Test Suite Coverage**: 132 unit tests across 16 suites covering Anthropic/Gemini/OpenAI handlers, cross-platform sidecar discovery (Linux/Win/macOS), model resolution & aliases, multimodal image extraction, and SSE stream formatting.
 - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for local symlink setup and coding standards.
 
 ---

@@ -105,7 +105,7 @@ function resolveWorkspace(ctx, messages, payload, req) {
   // Convert to file:/// URI format (what the sidecar expects)
   let workspaceUri = null;
   if (workspaceDir) {
-    workspaceUri = 'file:///' + workspaceDir.replace(/\\/g, '/');
+    workspaceUri = 'file:///' + workspaceDir.replace(/\\/g, '/').replace(/^\//, '');
     log(ctx, `📂 Workspace: ${workspaceDir} -> ${workspaceUri}`);
   } else {
     log(ctx, `⚠️ No workspace dir resolved — Antigravity may pick a random project`);

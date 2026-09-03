@@ -5,6 +5,25 @@ All notable changes to the **Konoha Bridge** extension will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-09-03
+
+### ✨ New Features & Model Synchronization
+
+- **Gemini 3.8 Flash Models**: Added complete support for `gemini-3.8-flash-high` (1053), `gemini-3.8-flash-medium` (1052), and `gemini-3.8-flash-low` (1054) across OpenAI (`/v1/chat/completions`), Anthropic (`/v1/messages`), and Gemini (`/v1beta/models/*`) API endpoints.
+- **100% Antigravity Alignment**: Synchronized the official active models list directly with Antigravity (`agy models`), offering all 14 canonical models with matching display names and metadata.
+- **Canonical Model IDs**: Updated `gpt-oss-120b-medium` to be the primary visible model ID in `/v1/models`, preserving `gpt-oss-120b` as a backward-compatible alias.
+
+### 🐛 Bug Fixes
+
+- **POSIX File URI Slicing**: Fixed path slicing in `extractImages` (`src/images.js`) on Linux/macOS so `file:///home/...` correctly preserves the leading slash instead of creating relative paths.
+- **POSIX Workspace URI Normalization**: Fixed `resolveWorkspace` (`src/workspace.js`) on POSIX systems to prevent quadruple slashes (`file:////...`), ensuring standard RFC 8089 URIs (`file:///...`).
+- **Startup Attempt Logging**: Fixed `startupAttempt` counter order in `src/extension.js` so actual attempt counts are logged accurately before counter reset.
+
+### 🧪 Testing & Docs
+
+- **Expanded Test Suite**: Added resolveModel unit tests for Gemini 3.8 models, aliases, and 14-model visible list validation, reaching 132 passing tests.
+- **Updated Documentation**: Fully refreshed `README.md`, `GEMINI.md`, and `CHANGELOG.md` with complete API endpoint tables, multi-protocol guides, and configuration snippets.
+
 ## [1.3.0] - 2026-08-16
 
 ### ✨ New Features & Enhancements
