@@ -3,12 +3,6 @@
 const http2 = require('http2');
 const { log } = require('../utils');
 
-// ─────────────────────────────────────────────
-// H2 Session Interceptor
-// Captures outgoing ConnectRPC payloads from
-// Antigravity's H2 sessions to the sidecar.
-// ─────────────────────────────────────────────
-
 function install(ctx) {
   try {
     const _originalH2Connect = http2.connect;

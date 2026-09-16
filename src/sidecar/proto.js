@@ -20,10 +20,6 @@ const {
   EnumValueDescriptorProtoSchema,
 } = require('@bufbuild/protobuf/wkt');
 
-// ─────────────────────────────────────────────
-// Descriptor Helpers
-// ─────────────────────────────────────────────
-
 function makeEnum(name, values) {
   return create(EnumDescriptorProtoSchema, {
     name,
@@ -43,10 +39,6 @@ function makeMessage(name, fields, nested) {
   if (nested) m.nestedType = nested;
   return create(DescriptorProtoSchema, m);
 }
-
-// ─────────────────────────────────────────────
-// Proto File Descriptors (minimal subset)
-// ─────────────────────────────────────────────
 
 const commonProto = create(FileDescriptorProtoSchema, {
   name: 'exa/codeium_common_pb/codeium_common.proto',
@@ -177,10 +169,6 @@ const lsProto = create(FileDescriptorProtoSchema, {
   ],
 });
 
-// ─────────────────────────────────────────────
-// Registry (lazy singleton)
-// ─────────────────────────────────────────────
-
 let _registry = null;
 
 function getRegistry() {
@@ -198,10 +186,6 @@ function getSchema(fullName) {
   if (!schema) throw new Error(`Proto schema not found: ${fullName}`);
   return schema;
 }
-
-// ─────────────────────────────────────────────
-// Public API
-// ─────────────────────────────────────────────
 
 /**
  * Encode a JSON-like object into binary protobuf for the given message type.

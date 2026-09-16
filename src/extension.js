@@ -22,10 +22,6 @@ const { showStatus, diagnoseModels, diagnoseCommands, probeSidecar } = require('
 /** @type {ReturnType<typeof createContext>} */
 let ctx;
 
-// ─────────────────────────────────────────────
-// Activation
-// ─────────────────────────────────────────────
-
 function activate(context) {
   ctx = createContext();
 

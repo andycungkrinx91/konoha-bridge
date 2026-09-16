@@ -9,6 +9,8 @@
   <a href="https://github.com/andycungkrinx91/konoha-bridge/stargazers"><img src="https://img.shields.io/github/stars/andycungkrinx91/konoha-bridge?style=for-the-badge&color=gold" alt="GitHub Stars"></a>
   <a href="https://github.com/andycungkrinx91/konoha-bridge/issues"><img src="https://img.shields.io/github/issues/andycungkrinx91/konoha-bridge?style=for-the-badge&color=red" alt="GitHub Issues"></a>
   <a href="https://github.com/andycungkrinx91/konoha-bridge/blob/master/LICENSE"><img src="https://img.shields.io/github/license/andycungkrinx91/konoha-bridge?style=for-the-badge&color=blue" alt="License"></a>
+  <a href="https://saweria.co/andycungkrinx"><img src="https://img.shields.io/badge/Support-Buy%20Me%20a%20Coffee-FF813F?style=for-the-badge&logo=buymeacoffee&logoColor=white" alt="Buy Me a Coffee (Saweria)"></a>
+  <a href="https://www.linkedin.com/in/andy-setiyawan-452396170/"><img src="https://img.shields.io/badge/LinkedIn-Andy%20Setiyawan-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Profile"></a>
 </p>
 
 <p align="center">
@@ -37,12 +39,9 @@ Use your Antigravity subscription directly with any tool that speaks OpenAI — 
 
 ## ⚡ How it Works
 
-```mermaid
-flowchart LR
-    A["Your Tool (opencode / Claude CLI / curl)"] -->|HTTP :1313| B["Konoha Bridge Extension"]
-    B -->|ConnectRPC / HTTP/2| C["Antigravity Sidecar"]
-    C -->|Authenticated API| D["Cloud AI Models (Gemini, Claude, GPT-OSS)"]
-```
+<p align="center">
+  <img src="assets/architecture-flow.gif" alt="Konoha Bridge Architecture & Data Flow" width="950">
+</p>
 
 The extension runs inside Antigravity's process, discovers the sidecar via process inspection across Linux, Windows, and macOS, intercepts CSRF tokens from internal traffic, and proxies your requests through the authenticated sidecar channel.
 
@@ -88,22 +87,22 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 ```bash
 # Antigravity IDE CLI
-antigravity --install-extension konoha-bridge-1.4.0.vsix
+antigravity --install-extension konoha-bridge-1.5.0.vsix
 
 # Standard VS Code CLI
-code --install-extension konoha-bridge-1.4.0.vsix
+code --install-extension konoha-bridge-1.5.0.vsix
 
 # Cursor IDE CLI
-cursor --install-extension konoha-bridge-1.4.0.vsix
+cursor --install-extension konoha-bridge-1.5.0.vsix
 ```
 
 #### Via IDE Interface (GUI):
 
-1. Download or locate `konoha-bridge-1.4.0.vsix` (from the repo root or [Releases](https://github.com/andycungkrinx91/konoha-bridge/releases)).
+1. Download or locate `konoha-bridge-1.5.0.vsix` (from the repo root or [Releases](https://github.com/andycungkrinx91/konoha-bridge/releases)).
 2. Open Antigravity / VS Code / Cursor.
 3. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 4. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions panel.
-5. Select **Install from VSIX...** and choose `konoha-bridge-1.4.0.vsix`.
+5. Select **Install from VSIX...** and choose `konoha-bridge-1.5.0.vsix`.
 6. Reload the window (`Ctrl+Shift+P` → `Developer: Reload Window`).
 
 ---
@@ -343,3 +342,13 @@ This repository is a customized fork built upon the excellent work of **Marco Di
 
 - **Original Repository**: [`marcodiniz/ag-local-bridge`](https://github.com/marcodiniz/ag-local-bridge)
 - All original code, architecture patterns, and copyrights belong to their respective authors under the terms of the MIT License.
+
+---
+
+## ☕ Support & Connect
+
+If Konoha Bridge enhances your development workflow, you can support ongoing maintenance or connect with the author:
+
+- ☕ **Buy Me a Coffee (Saweria)**: [https://saweria.co/andycungkrinx](https://saweria.co/andycungkrinx)
+- 💼 **LinkedIn Profile**: [Andy Setiyawan](https://www.linkedin.com/in/andy-setiyawan-452396170/)
+- 🐙 **GitHub Profile**: [@andycungkrinx91](https://github.com/andycungkrinx91)

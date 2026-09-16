@@ -15,23 +15,16 @@ const VALUE_TO_MODEL_ENUM = {
   1035: 'MODEL_PLACEHOLDER_M35', // Sonnet
   1026: 'MODEL_PLACEHOLDER_M26', // Opus
   342: 'MODEL_OPENAI_GPT_OSS_120B_MEDIUM', // GPT-OSS 120B
-  1043: 'MODEL_GEMINI_3_5_FLASH_MEDIUM', // Gemini 3.5 Flash Medium
-  1044: 'MODEL_GEMINI_3_5_FLASH_HIGH', // Gemini 3.5 Flash High
-  1045: 'MODEL_GEMINI_3_5_FLASH_LOW', // Gemini 3.5 Flash Low
-  1046: 'MODEL_GEMINI_3_6_FLASH_MEDIUM', // Gemini 3.6 Flash Medium
-  1047: 'MODEL_GEMINI_3_6_FLASH_HIGH', // Gemini 3.6 Flash High
-  1048: 'MODEL_GEMINI_3_6_FLASH_LOW', // Gemini 3.6 Flash Low
-  1049: 'MODEL_GEMINI_3_7_FLASH_MEDIUM', // Gemini 3.7 Flash Medium
-  1050: 'MODEL_GEMINI_3_7_FLASH_HIGH', // Gemini 3.7 Flash High
-  1051: 'MODEL_GEMINI_3_7_FLASH_LOW', // Gemini 3.7 Flash Low
-  1052: 'MODEL_GEMINI_3_8_FLASH_MEDIUM', // Gemini 3.8 Flash Medium
-  1053: 'MODEL_GEMINI_3_8_FLASH_HIGH', // Gemini 3.8 Flash High
-  1054: 'MODEL_GEMINI_3_8_FLASH_LOW', // Gemini 3.8 Flash Low
+  1046: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash Medium
+  1047: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash High
+  1048: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash Low
+  1049: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash Medium
+  1050: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash High
+  1051: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash Low
+  1052: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash Medium
+  1053: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash High
+  1054: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash Low
 };
-
-// ─────────────────────────────────────────────
-// Anthropic → OpenAI message conversion
-// ─────────────────────────────────────────────
 
 /**
  * Convert Anthropic-format messages to OpenAI-format messages.
@@ -141,10 +134,6 @@ function extractAnthropicText(content) {
   return '';
 }
 
-// ─────────────────────────────────────────────
-// Anthropic SSE response builders
-// ─────────────────────────────────────────────
-
 function buildAnthropicMessage(id, model) {
   return {
     id: `msg_${id}`,
@@ -161,10 +150,6 @@ function buildAnthropicMessage(id, model) {
 function writeAnthropicEvent(res, event, data) {
   res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
 }
-
-// ─────────────────────────────────────────────
-// POST /v1/messages
-// ─────────────────────────────────────────────
 
 async function handleAnthropicMessages(ctx, req, res) {
   const body = await readBody(req);
@@ -385,12 +370,6 @@ async function handleAnthropicMessages(ctx, req, res) {
     ctx.lastResponseTimestamp = Date.now();
   }
 }
-
-// ─────────────────────────────────────────────
-// POST /v1/messages/count_tokens  (mock)
-// Claude CLI and Cherry Studio send this before every conversation.
-// Return a plausible mock so they don't abort.
-// ─────────────────────────────────────────────
 
 async function handleCountTokens(ctx, req, res) {
   // Consume the body so the socket stays clean

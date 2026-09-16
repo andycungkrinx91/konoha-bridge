@@ -5,6 +5,22 @@ All notable changes to the **Konoha Bridge** extension will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-09-16
+
+### 🐛 Bug Fixes & Model Alignment
+
+- **Fix 404 NOT_FOUND on Gemini Flash Models (3.6 to 3.8)**: Corrected sidecar enum routing across `VALUE_TO_MODEL_ENUM` in `src/handlers/openai.js`, `src/handlers/anthropic.js`, and `src/handlers/gemini.js` to route all active Flash model variants (1046–1054) to `'MODEL_PLACEHOLDER_M18'`. This resolves the upstream Google API error (`Upstream model provider error: NOT_FOUND (code 404): Requested entity was not found`).
+- **Strict Antigravity Model Alignment**: Removed deprecated Gemini 3.5 models to strictly match what Antigravity officially serves (14 canonical models across Flash 3.6/3.7/3.8, Pro 3.1, Claude 4.6, and GPT-OSS 120B).
+- **Model Convenience Shortcuts**: Added canonical short aliases (`gemini-3.8-flash`, `gemini-3.7-flash`, `gemini-3.6-flash`, `gemini-flash`, `flash`) for seamless invocation across CLI tools and external clients.
+
+### 🧪 Testing, Quality & Documentation
+
+- **ResolveModel Test Coverage**: Validated model resolution and alias mapping for all 14 official models (132 unit tests total).
+- **Animated Architecture Flow Diagram**: Created an animated SVG/GIF flow diagram in `README.md` (`assets/architecture-flow.gif`) featuring animated dotted request/response paths with zero visual overlap.
+- **Zero-AI-Slop Code Quality Gate**: Reached a clean 100/100 `aislop` health score (0 errors, 0 warnings across all 5 engines) by declaring `@types/vscode` and stripping narrative comment noise.
+- **Author & Community Support**: Added Saweria (Buy Me a Coffee) and LinkedIn profile links across documentation and `package.json` metadata.
+- **Updated Documentation**: Updated `README.md`, `GEMINI.md`, and `CHANGELOG.md` with 1.5.0 VSIX installation instructions, model alias mappings, and architecture notes.
+
 ## [1.4.0] - 2026-09-03
 
 ### ✨ New Features & Model Synchronization

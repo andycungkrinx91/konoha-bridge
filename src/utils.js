@@ -5,10 +5,6 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-// ─────────────────────────────────────────────
-// Logging
-// ─────────────────────────────────────────────
-
 function log(ctx, msg, isError = false) {
   if (typeof msg === 'object') {
     try {
@@ -71,20 +67,12 @@ function verboseLog(ctx, msg, fullContent = null) {
   }
 }
 
-// ─────────────────────────────────────────────
-// Status Bar
-// ─────────────────────────────────────────────
-
 function updateStatusBar(ctx, running, port) {
   if (!ctx.statusBarItem) return;
   ctx.statusBarItem.text = running ? `$(radio-tower) AG Bridge :${port}` : '$(warning) AG Bridge OFF';
   ctx.statusBarItem.backgroundColor = running ? undefined : new vscode.ThemeColor('statusBarItem.warningBackground');
   ctx.statusBarItem.show();
 }
-
-// ─────────────────────────────────────────────
-// HTTP Response Helpers
-// ─────────────────────────────────────────────
 
 function setupStreamResponse(res) {
   res.setHeader('Content-Type', 'text/event-stream');
@@ -119,10 +107,6 @@ function readBody(req, maxBytes = 10 * 1024 * 1024) {
   });
 }
 
-// ─────────────────────────────────────────────
-// OpenAI Response Builders
-// ─────────────────────────────────────────────
-
 function buildStreamChunk(id, model, content, finishReason = null) {
   const delta = content !== null ? { role: 'assistant', content } : {};
   return {
@@ -144,10 +128,6 @@ function buildCompletion(id, model, content) {
     usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
   };
 }
-
-// ─────────────────────────────────────────────
-// Error Parsing Helpers
-// ─────────────────────────────────────────────
 
 /**
  * Extracts a sensible Retry-After value from a sidecar rate limit message.

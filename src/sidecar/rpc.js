@@ -5,10 +5,6 @@ const https = require('https');
 const http2 = require('http2');
 const fs = require('fs');
 
-// ─────────────────────────────────────────────
-// ConnectRPC communication with the sidecar
-// ─────────────────────────────────────────────
-
 /**
  * Low-level H2 ConnectRPC unary call.
  * Both JSON and Proto callers delegate here — the only difference is
@@ -162,10 +158,6 @@ async function _withRetry(fn, retries = 2, retryOnTimeout = true) {
   }
 }
 
-// ─────────────────────────────────────────────
-// Public: JSON calls
-// ─────────────────────────────────────────────
-
 /** Make a unary H2+JSON ConnectRPC call (with automatic retry) */
 async function makeH2JsonCall(port, csrf, certPath, method, body, retries = 2, timeoutMs = 10000) {
   const payload = Buffer.from(JSON.stringify(body));
@@ -189,10 +181,6 @@ function makeH2StreamingCall(port, csrf, certPath, method, body) {
   return _makeH2StreamingCallOnce(port, csrf, certPath, method, 'application/json', payload);
 }
 
-// ─────────────────────────────────────────────
-// Public: Proto calls
-// ─────────────────────────────────────────────
-
 /** Make a unary H2+Proto ConnectRPC call (with automatic retry) */
 async function makeH2ProtoCall(port, csrf, certPath, method, protoBytes, retries = 2) {
   const payload = Buffer.from(protoBytes);
@@ -208,10 +196,6 @@ function makeH2ProtoStreamingCall(port, csrf, certPath, method, protoBytes) {
   const payload = Buffer.from(protoBytes);
   return _makeH2StreamingCallOnce(port, csrf, certPath, method, 'application/proto', payload);
 }
-
-// ─────────────────────────────────────────────
-// Legacy: HTTP/1.1 ConnectRPC (with HTTPS→HTTP fallback)
-// ─────────────────────────────────────────────
 
 function makeConnectRpcCallOnPort(port, csrf, certPath, servicePath, payload) {
   return new Promise((resolve, reject) => {

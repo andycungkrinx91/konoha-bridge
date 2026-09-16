@@ -2,7 +2,7 @@
   "name": "konoha-bridge",
   "displayName": "Konoha Bridge",
   "description": "Exposes the running Antigravity instance as a local OpenAI-compatible API on localhost:1313",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "publisher": "andycungkrinx91",
   "license": "MIT",
   "icon": "assets/icon.png",
@@ -11,6 +11,14 @@
     "url": "https://github.com/andycungkrinx91/konoha-bridge"
   },
   "homepage": "https://github.com/andycungkrinx91/konoha-bridge#readme",
+  "author": {
+    "name": "Andy Setiyawan",
+    "url": "https://www.linkedin.com/in/andy-setiyawan-452396170/"
+  },
+  "funding": {
+    "type": "custom",
+    "url": "https://saweria.co/andycungkrinx"
+  },
   "bugs": {
     "url": "https://github.com/andycungkrinx91/konoha-bridge/issues"
   },
@@ -51,6 +59,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/vscode": "^1.85.0",
     "eslint": "^10.6.0",
     "globals": "^17.7.0",
     "prettier": "^3.9.0"

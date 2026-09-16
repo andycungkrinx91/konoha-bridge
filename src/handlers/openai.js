@@ -26,23 +26,16 @@ const VALUE_TO_MODEL_ENUM = {
   1035: 'MODEL_PLACEHOLDER_M35', // Sonnet
   1026: 'MODEL_PLACEHOLDER_M26', // Opus
   342: 'MODEL_OPENAI_GPT_OSS_120B_MEDIUM', // GPT-OSS 120B
-  1043: 'MODEL_GEMINI_3_5_FLASH_MEDIUM', // Gemini 3.5 Flash Medium
-  1044: 'MODEL_GEMINI_3_5_FLASH_HIGH', // Gemini 3.5 Flash High
-  1045: 'MODEL_GEMINI_3_5_FLASH_LOW', // Gemini 3.5 Flash Low
-  1046: 'MODEL_GEMINI_3_6_FLASH_MEDIUM', // Gemini 3.6 Flash Medium
-  1047: 'MODEL_GEMINI_3_6_FLASH_HIGH', // Gemini 3.6 Flash High
-  1048: 'MODEL_GEMINI_3_6_FLASH_LOW', // Gemini 3.6 Flash Low
-  1049: 'MODEL_GEMINI_3_7_FLASH_MEDIUM', // Gemini 3.7 Flash Medium
-  1050: 'MODEL_GEMINI_3_7_FLASH_HIGH', // Gemini 3.7 Flash High
-  1051: 'MODEL_GEMINI_3_7_FLASH_LOW', // Gemini 3.7 Flash Low
-  1052: 'MODEL_GEMINI_3_8_FLASH_MEDIUM', // Gemini 3.8 Flash Medium
-  1053: 'MODEL_GEMINI_3_8_FLASH_HIGH', // Gemini 3.8 Flash High
-  1054: 'MODEL_GEMINI_3_8_FLASH_LOW', // Gemini 3.8 Flash Low
+  1046: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash Medium
+  1047: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash High
+  1048: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash Low
+  1049: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash Medium
+  1050: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash High
+  1051: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash Low
+  1052: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash Medium
+  1053: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash High
+  1054: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash Low
 };
-
-// ─────────────────────────────────────────────
-// POST /v1/chat/completions
-// ─────────────────────────────────────────────
 
 async function handleChatCompletions(ctx, req, res) {
   const body = await readBody(req);
@@ -64,7 +57,7 @@ async function handleChatCompletions(ctx, req, res) {
 
   // Safeguard: detect [object Object] serialization corruption
   const userTexts = messages.filter((m) => m.role === 'user').map((m) => extractText(m.content));
-  const allCorrupted = userTexts.length > 0 && userTexts.every((t) => /^\[object Object\]/.test(t));
+  const allCorrupted = userTexts.length > 0 && userTexts.every((t) => t.startsWith('[object Object]'));
   if (allCorrupted) {
     log(ctx, `⚠️ [object Object] DETECTED — upstream caller is not serializing messages properly!`, true);
     log(ctx, `⚠️ Raw messages: ${JSON.stringify(messages).substring(0, 300)}`);

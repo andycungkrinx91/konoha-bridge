@@ -13,24 +13,16 @@ const VALUE_TO_MODEL_ENUM = {
   1035: 'MODEL_PLACEHOLDER_M35', // Sonnet
   1026: 'MODEL_PLACEHOLDER_M26', // Opus
   342: 'MODEL_OPENAI_GPT_OSS_120B_MEDIUM', // GPT-OSS 120B
-  1043: 'MODEL_GEMINI_3_5_FLASH_MEDIUM', // Gemini 3.5 Flash Medium
-  1044: 'MODEL_GEMINI_3_5_FLASH_HIGH', // Gemini 3.5 Flash High
-  1045: 'MODEL_GEMINI_3_5_FLASH_LOW', // Gemini 3.5 Flash Low
-  1046: 'MODEL_GEMINI_3_6_FLASH_MEDIUM', // Gemini 3.6 Flash Medium
-  1047: 'MODEL_GEMINI_3_6_FLASH_HIGH', // Gemini 3.6 Flash High
-  1048: 'MODEL_GEMINI_3_6_FLASH_LOW', // Gemini 3.6 Flash Low
-  1049: 'MODEL_GEMINI_3_7_FLASH_MEDIUM', // Gemini 3.7 Flash Medium
-  1050: 'MODEL_GEMINI_3_7_FLASH_HIGH', // Gemini 3.7 Flash High
-  1051: 'MODEL_GEMINI_3_7_FLASH_LOW', // Gemini 3.7 Flash Low
-  1052: 'MODEL_GEMINI_3_8_FLASH_MEDIUM', // Gemini 3.8 Flash Medium
-  1053: 'MODEL_GEMINI_3_8_FLASH_HIGH', // Gemini 3.8 Flash High
-  1054: 'MODEL_GEMINI_3_8_FLASH_LOW', // Gemini 3.8 Flash Low
+  1046: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash Medium
+  1047: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash High
+  1048: 'MODEL_PLACEHOLDER_M18', // Gemini 3.6 Flash Low
+  1049: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash Medium
+  1050: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash High
+  1051: 'MODEL_PLACEHOLDER_M18', // Gemini 3.7 Flash Low
+  1052: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash Medium
+  1053: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash High
+  1054: 'MODEL_PLACEHOLDER_M18', // Gemini 3.8 Flash Low
 };
-
-// ─────────────────────────────────────────────
-// Gemini → OpenAI message conversion
-// Gemini uses `contents[].parts[].text`
-// ─────────────────────────────────────────────
 
 /**
  * Convert Gemini-format `contents` to OpenAI-format messages.
@@ -87,10 +79,6 @@ function geminiToolsToOpenAi(tools) {
   return openAiTools.length > 0 ? openAiTools : null;
 }
 
-// ─────────────────────────────────────────────
-// Gemini response builders
-// ─────────────────────────────────────────────
-
 function buildGeminiResponse(text, toolCalls, modelKey) {
   const parts = [];
 
@@ -121,11 +109,6 @@ function buildGeminiResponse(text, toolCalls, modelKey) {
     modelVersion: modelKey,
   };
 }
-
-// ─────────────────────────────────────────────
-// POST /v1beta/models/:model:generateContent
-// POST /v1beta/models/:model:streamGenerateContent
-// ─────────────────────────────────────────────
 
 async function handleGeminiGenerateContent(ctx, req, res, modelFromPath) {
   const body = await readBody(req);

@@ -3,10 +3,6 @@
 const { MODEL_MAP } = require('../models');
 const { sendJson } = require('../utils');
 
-// ─────────────────────────────────────────────
-// GET /v1/models
-// ─────────────────────────────────────────────
-
 async function handleModels(ctx, req, res) {
   const data = Object.entries(MODEL_MAP)
     .filter(([, m]) => !m.hidden)

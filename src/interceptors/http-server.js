@@ -3,12 +3,6 @@
 const http = require('http');
 const { log } = require('../utils');
 
-// ─────────────────────────────────────────────
-// HTTP createServer Interceptor
-// Observes CSRF tokens on accepted requests
-// to Antigravity's local HTTP server.
-// ─────────────────────────────────────────────
-
 /** Patch http.createServer — observe CSRF tokens on accepted requests */
 function createInterceptedCreateServer(ctx) {
   return function interceptedCreateServer(...args) {

@@ -10,10 +10,6 @@ const { handleGeminiGenerateContent, parseGeminiPath } = require('./handlers/gem
 const { handleProxy } = require('./handlers/proxy');
 const { handleDebug } = require('./handlers/debug');
 
-// ─────────────────────────────────────────────
-// HTTP Server
-// ─────────────────────────────────────────────
-
 async function startServer(ctx) {
   const config = vscode.workspace.getConfiguration('agLocalBridge');
   const basePort = config.get('port', 1313);
@@ -96,10 +92,6 @@ function stopServer(ctx) {
     });
   });
 }
-
-// ─────────────────────────────────────────────
-// Request Router
-// ─────────────────────────────────────────────
 
 /**
  * Check if an Origin header value is from localhost.

@@ -1,0 +1,17 @@
+version: 1
+engines:
+  format: true
+  lint: true
+  code-quality: true
+  ai-slop: true
+  architecture: false
+  security: true
+quality:
+  maxFunctionLoc: 300
+  maxFileLoc: 1000
+  maxNesting: 12
+  maxParams: 10
+rules:
+  code-quality/duplicate-block: off
+  eslint/no-empty: off
+  eslint/no-unused-vars: off

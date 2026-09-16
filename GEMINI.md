@@ -147,13 +147,7 @@ Bypasses Cascade entirely — calls `GetModelResponse` directly on the sidecar.
 - Formats OpenAI messages into a flat prompt string with role labels
 - Parses `<tool_call>{...}</tool_call>` blocks back into OpenAI `tool_calls` format
 - Timeout: **15 minutes** (LLM inference can be very slow)
-- Model enum values: `MODEL_PLACEHOLDER_M18` (Flash), `MODEL_GEMINI_3_5_FLASH_MEDIUM` (3.5 Flash Medium),
-  `MODEL_GEMINI_3_5_FLASH_HIGH` (3.5 Flash High), `MODEL_GEMINI_3_5_FLASH_LOW` (3.5 Flash Low),
-  `MODEL_GEMINI_3_6_FLASH_MEDIUM` (3.6 Flash Medium), `MODEL_GEMINI_3_6_FLASH_HIGH` (3.6 Flash High),
-  `MODEL_GEMINI_3_6_FLASH_LOW` (3.6 Flash Low), `MODEL_GEMINI_3_7_FLASH_MEDIUM` (3.7 Flash Medium),
-  `MODEL_GEMINI_3_7_FLASH_HIGH` (3.7 Flash High), `MODEL_GEMINI_3_7_FLASH_LOW` (3.7 Flash Low),
-  `MODEL_GEMINI_3_8_FLASH_MEDIUM` (3.8 Flash Medium), `MODEL_GEMINI_3_8_FLASH_HIGH` (3.8 Flash High),
-  `MODEL_GEMINI_3_8_FLASH_LOW` (3.8 Flash Low),
+- Model enum values: `MODEL_PLACEHOLDER_M18` (Flash — all Gemini Flash variants 3.6, 3.7, 3.8 map here),
   `MODEL_PLACEHOLDER_M16` (Pro High), `MODEL_PLACEHOLDER_M36` (Pro Low), `MODEL_PLACEHOLDER_M35` (Sonnet),
   `MODEL_PLACEHOLDER_M26` (Opus), `MODEL_OPENAI_GPT_OSS_120B_MEDIUM` (GPT-OSS 120B)
 - **Auth re-discovery**: On `PERMISSION_DENIED` / `401` / `403` in the raw response body,
@@ -194,7 +188,7 @@ whenever the base version in `package.json` changes.
 All three endpoints delegate to the same `callRawInference()` path — the handlers only
 convert the request/response format.
 
-#### OpenAI (`src/handlers/chat.js`)
+#### OpenAI (`src/handlers/openai.js`)
 
 - `POST /v1/chat/completions` — standard OpenAI Chat Completions format
 - `GET /v1/models` — lists available models
@@ -235,4 +229,8 @@ and short-form aliases (hidden from model list) for compatibility with other too
 | `gemini-3.6-flash-high`    | `gemini-3.6-flash-high`    | 1047       |
 | `gemini-3.6-flash-medium`  | `gemini-3.6-flash-medium`  | 1046       |
 | `gemini-3.6-flash-low`     | `gemini-3.6-flash-low`     | 1048       |
+| `gemini-3.8-flash`         | `gemini-3.8-flash-medium`  | 1052       |
+| `gemini-3.7-flash`         | `gemini-3.7-flash-medium`  | 1049       |
+| `gemini-3.6-flash`         | `gemini-3.6-flash-medium`  | 1046       |
+| `gemini-flash` / `flash`   | `gemini-3.6-flash-medium`  | 1046       |
 | `gpt-oss-120b`             | `gpt-oss-120b-medium`      | 342        |

@@ -28,15 +28,6 @@ const MODEL_ENUM_TO_VALUE = {
   MODEL_GEMINI_3_8_FLASH_LOW: 1054,
 };
 
-// ─────────────────────────────────────────────
-// Raw Inference via GetModelResponse
-// Bypasses Cascade entirely — pure LLM inference.
-//
-// Schema (decoded from sidecar protobuf):
-//   Request:  { prompt: string, model: string }
-//   Response: { response: string }
-// ─────────────────────────────────────────────
-
 /**
  * Format OpenAI-style messages into a single prompt string for GetModelResponse.
  *

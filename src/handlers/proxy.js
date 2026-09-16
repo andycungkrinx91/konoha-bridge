@@ -4,10 +4,6 @@ const { sendJson, readBody } = require('../utils');
 const { discoverSidecar } = require('../sidecar/discovery');
 const { makeH2JsonCall } = require('../sidecar/rpc');
 
-// ─────────────────────────────────────────────
-// POST /v1/proxy — forward RPC to sidecar
-// ─────────────────────────────────────────────
-
 async function handleProxy(ctx, req, res) {
   const body = await readBody(req);
   let payload;

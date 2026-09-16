@@ -1,9 +1,5 @@
 'use strict';
 
-// ─────────────────────────────────────────────
-// Model Mapping: string ID → sidecar enum value
-// ─────────────────────────────────────────────
-
 const MODEL_MAP = {
   // Main Antigravity models
   'gemini-3.8-flash-high': {
@@ -114,7 +110,7 @@ const MODEL_MAP = {
     hidden: true,
   },
   antigravity: {
-    value: 1043,
+    value: 1046,
     name: 'Antigravity (Default)',
     owned_by: 'antigravity',
     context: 1048576,
@@ -240,6 +236,47 @@ const MODEL_MAP = {
     owned_by: 'google',
     context: 1048576,
     output: 65535,
+    hidden: true,
+  },
+  // Convenience aliases
+  'gemini-3.8-flash': {
+    value: 1052,
+    name: 'Gemini 3.8 Flash (Medium)',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+    hidden: true,
+  },
+  'gemini-3.7-flash': {
+    value: 1049,
+    name: 'Gemini 3.7 Flash (Medium)',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+    hidden: true,
+  },
+  'gemini-3.6-flash': {
+    value: 1046,
+    name: 'Gemini 3.6 Flash (Medium)',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+    hidden: true,
+  },
+  'gemini-flash': {
+    value: 1018,
+    name: 'Gemini Flash',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
+    hidden: true,
+  },
+  flash: {
+    value: 1018,
+    name: 'Gemini Flash',
+    owned_by: 'google',
+    context: 1048576,
+    output: 65536,
     hidden: true,
   },
 };

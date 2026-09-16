@@ -9,17 +9,6 @@ const { execFile } = require('child_process');
 const execFileAsync = promisify(execFile);
 const { log } = require('../utils');
 
-// ─────────────────────────────────────────────
-// Sidecar Discovery (cross-platform)
-// Finds the running language_server process and
-// extracts ports, CSRF tokens, and cert path.
-//
-// Platform strategies:
-//   Windows – Get-CimInstance Win32_Process (PowerShell)
-//   macOS   – ps aux + lsof -iTCP -sTCP:LISTEN
-//   Linux   – ps aux + ss -tlnp
-// ─────────────────────────────────────────────
-
 /**
  * Binary names the Antigravity sidecar has shipped as, per platform.
  */
@@ -140,10 +129,6 @@ function chooseBestProcess(candidates, currentWorkspaceId) {
     (a, b) => rankProcessCandidate(b, currentWorkspaceId) - rankProcessCandidate(a, currentWorkspaceId),
   )[0];
 }
-
-// ─────────────────────────────────────────────
-// Windows strategy  (PowerShell Get-CimInstance)
-// ─────────────────────────────────────────────
 
 async function execWithFallback(cmdBase, cmdAbsolute, args, options) {
   const primary = cmdAbsolute || cmdBase;
@@ -299,10 +284,6 @@ function windowsStrategy(binaryNames) {
   };
 }
 
-// ─────────────────────────────────────────────
-// macOS strategy  (ps aux + lsof)
-// ─────────────────────────────────────────────
-
 function darwinStrategy(binaryNames) {
   return {
     async findProcess(currentWorkspaceId) {
@@ -343,10 +324,6 @@ function darwinStrategy(binaryNames) {
     },
   };
 }
-
-// ─────────────────────────────────────────────
-// Linux strategy  (ps aux + ss / lsof)
-// ─────────────────────────────────────────────
 
 function linuxStrategy(binaryNames) {
   return {
@@ -405,10 +382,6 @@ function linuxStrategy(binaryNames) {
   };
 }
 
-// ─────────────────────────────────────────────
-// Strategy factory
-// ─────────────────────────────────────────────
-
 /**
  * Return the correct strategy for the given (or current) platform.
  * @param {string} [platformOverride] - Optional platform string; defaults to os.platform().
@@ -435,10 +408,6 @@ function getPlatformStrategy(platformOverride) {
     platform,
   };
 }
-
-// ─────────────────────────────────────────────
-// Public API
-// ─────────────────────────────────────────────
 
 let _discoveryInFlight = null;
 

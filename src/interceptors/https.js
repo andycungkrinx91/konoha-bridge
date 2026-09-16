@@ -3,12 +3,6 @@
 const https = require('https');
 const { log } = require('../utils');
 
-// ─────────────────────────────────────────────
-// HTTPS Request Interceptor
-// Captures CSRF tokens from Antigravity's outgoing
-// HTTPS requests to its sidecar server.
-// ─────────────────────────────────────────────
-
 /** Patch https.request — intercept outgoing CSRF tokens */
 function createInterceptedRequest(ctx) {
   return function interceptedRequest(optionsOrUrl, ...args) {

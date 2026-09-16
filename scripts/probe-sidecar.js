@@ -92,9 +92,6 @@ async function discoverSidecar() {
 
     // Find cert
     let certPath = null;
-    const possibleCertPaths = [
-        path.join(os.homedir(), '.antigravity', 'extensions'),
-    ];
     // Try to find cert.pem in AG extension
     try {
         const extDir = path.join(os.homedir(), '.antigravity', 'extensions');
@@ -365,7 +362,7 @@ async function main() {
 
     // 4. Probe ChatClientServerService on extension_server_port AND LS ports
     console.log('─── Probing ChatClientServerService Methods ───\n');
-    const allPorts = [...new Set([...info.actualPorts])];
+    const allPorts = [...new Set(info.actualPorts)];
     const allCsrfs = [...new Set([mainCsrf, extCsrf].filter(Boolean))];
 
     for (const method of CHAT_CLIENT_METHODS) {

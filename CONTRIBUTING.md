@@ -101,3 +101,10 @@ The pre-commit hook (`.githooks/pre-commit`) will block commits if formatting, l
 3. Ensure all tests pass and your code is formatted: `npm run format && npm run lint && npm test`.
 4. Commit your changes with clear, descriptive commit messages.
 5. Push to your fork and submit a Pull Request to `master`.
+
+---
+
+## ☕ Support & Connect
+
+- ☕ **Buy Me a Coffee (Saweria)**: [https://saweria.co/andycungkrinx](https://saweria.co/andycungkrinx)
+- 💼 **LinkedIn Profile**: [Andy Setiyawan](https://www.linkedin.com/in/andy-setiyawan-452396170/)
