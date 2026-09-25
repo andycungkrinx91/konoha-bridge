@@ -306,15 +306,37 @@ function resolveModel(requestedModel) {
   if (!requestedModel || requestedModel === 'antigravity') {
     return { key: DEFAULT_MODEL_KEY, ...MODEL_MAP[DEFAULT_MODEL_KEY] };
   }
-  if (MODEL_MAP[requestedModel]) return { key: requestedModel, ...MODEL_MAP[requestedModel] };
-  // Try partial match (e.g. "claude-sonnet" matches "claude-sonnet-4.6")
-  const lower = requestedModel.toLowerCase();
+  if (Object.prototype.hasOwnProperty.call(MODEL_MAP, requestedModel)) {
+    return { key: requestedModel, ...MODEL_MAP[requestedModel] };
+  }
+
+  const lower = String(requestedModel).toLowerCase();
+
+  // Direct substring or inclusion match on keys
   for (const [k, v] of Object.entries(MODEL_MAP)) {
     if (k.toLowerCase().includes(lower) || lower.includes(k.toLowerCase())) {
       return { key: k, ...v };
     }
   }
-  // Default fallback
+
+  // Smart family heuristic matching for standard external model names
+  if (lower.includes('opus')) {
+    return { key: 'claude-opus-4-6-thinking', ...MODEL_MAP['claude-opus-4-6-thinking'] };
+  }
+  if (lower.includes('sonnet') || lower.includes('haiku') || lower.includes('claude')) {
+    return { key: 'claude-sonnet-4-6', ...MODEL_MAP['claude-sonnet-4-6'] };
+  }
+  if (lower.includes('pro') && !lower.includes('gpt')) {
+    return { key: 'gemini-3.1-pro-high', ...MODEL_MAP['gemini-3.1-pro-high'] };
+  }
+  if (lower.includes('flash') || lower.includes('gemini')) {
+    return { key: 'gemini-3.8-flash-high', ...MODEL_MAP['gemini-3.8-flash-high'] };
+  }
+  if (lower.includes('gpt-oss') || lower.includes('oss-120b')) {
+    return { key: 'gpt-oss-120b-medium', ...MODEL_MAP['gpt-oss-120b-medium'] };
+  }
+
+  // Default fallback - guaranteed to have a valid numeric value
   return { key: DEFAULT_MODEL_KEY, ...MODEL_MAP[DEFAULT_MODEL_KEY] };
 }
 

@@ -204,19 +204,24 @@ async function _handleChatCompletionsInner(
   }
 
   const tools = payload.tools && payload.tools.length > 0 ? payload.tools : null;
-  const modelEnum = VALUE_TO_MODEL_ENUM[resolved.value];
-
+  let modelEnum = VALUE_TO_MODEL_ENUM[resolved?.value];
   if (!modelEnum) {
-    const errorMsg = `No raw model enum mapping for value ${resolved.value}. Raw inference unavailable.`;
-    log(ctx, `⚠️ ${errorMsg}`);
-    const errPayload = { error: { message: errorMsg, type: 'invalid_request' } };
-    if (isStream && !res.writableEnded) {
-      res.write(`data: ${JSON.stringify({ error: errPayload.error })}\n\n`);
-      res.end();
-    } else if (!res.headersSent) {
-      sendJson(res, 400, errPayload);
+    const key = String(resolved?.key || payload.model || '').toLowerCase();
+    if (key.includes('opus')) {
+      modelEnum = 'MODEL_PLACEHOLDER_M26';
+    } else if (key.includes('sonnet') || key.includes('haiku') || key.includes('claude')) {
+      modelEnum = 'MODEL_PLACEHOLDER_M35';
+    } else if (key.includes('pro')) {
+      modelEnum = 'MODEL_PLACEHOLDER_M16';
+    } else if (key.includes('gpt-oss') || key.includes('oss-120b')) {
+      modelEnum = 'MODEL_OPENAI_GPT_OSS_120B_MEDIUM';
+    } else {
+      modelEnum = 'MODEL_PLACEHOLDER_M18';
     }
-    return;
+    log(
+      ctx,
+      `⚠️ Unmapped model value '${resolved?.value}' for '${resolved?.key || payload.model}' — falling back to ${modelEnum}`,
+    );
   }
 
   try {

@@ -126,10 +126,18 @@ async function handleGeminiGenerateContent(ctx, req, res, modelFromPath) {
   const resolved = resolveModel(modelFromPath || payload.model);
   log(ctx, `📡 [Gemini] Model: ${resolved.key} (enum=${resolved.value})`);
 
-  const modelEnum = VALUE_TO_MODEL_ENUM[resolved.value];
+  let modelEnum = VALUE_TO_MODEL_ENUM[resolved?.value];
   if (!modelEnum) {
-    const msg = `No raw model enum mapping for value ${resolved.value}.`;
-    return sendJson(res, 400, { error: { code: 400, message: msg, status: 'INVALID_ARGUMENT' } });
+    const key = String(resolved?.key || modelFromPath || payload.model || '').toLowerCase();
+    if (key.includes('pro')) {
+      modelEnum = 'MODEL_PLACEHOLDER_M16';
+    } else {
+      modelEnum = 'MODEL_PLACEHOLDER_M18';
+    }
+    log(
+      ctx,
+      `⚠️ Unmapped model value '${resolved?.value}' for '${resolved?.key || modelFromPath || payload.model}' — falling back to ${modelEnum}`,
+    );
   }
 
   // Rate limit guard

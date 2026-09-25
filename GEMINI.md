@@ -209,28 +209,25 @@ convert the request/response format.
 - Strips `:generateContent` / `:streamGenerateContent` operation suffix from path
 - Converts `contents[].parts[].text` ↔ OpenAI messages, `functionDeclarations` ↔ OpenAI tools
 
-### Model ID Aliases
+### Available Models (OpenAI-Compatible & Native)
 
-`src/models.js` supports both the full `antigravity-*` prefixed IDs (shown in `/v1/models`)
-and short-form aliases (hidden from model list) for compatibility with other tools:
+`src/models.js` defines the 14 official Antigravity models exposed via `GET /v1/models`:
 
-| Short alias                | Full ID                    | Enum value |
-| -------------------------- | -------------------------- | ---------- |
-| `claude-sonnet-4-6`        | `claude-sonnet-4-6`        | 1035       |
-| `claude-opus-4-6-thinking` | `claude-opus-4-6-thinking` | 1026       |
-| `gemini-3.1-pro-high`      | `gemini-3.1-pro-high`      | 1037       |
-| `gemini-3.1-pro-low`       | `gemini-3.1-pro-low`       | 1036       |
-| `gemini-3.8-flash-high`    | `gemini-3.8-flash-high`    | 1053       |
-| `gemini-3.8-flash-medium`  | `gemini-3.8-flash-medium`  | 1052       |
-| `gemini-3.8-flash-low`     | `gemini-3.8-flash-low`     | 1054       |
-| `gemini-3.7-flash-high`    | `gemini-3.7-flash-high`    | 1050       |
-| `gemini-3.7-flash-medium`  | `gemini-3.7-flash-medium`  | 1049       |
-| `gemini-3.7-flash-low`     | `gemini-3.7-flash-low`     | 1051       |
-| `gemini-3.6-flash-high`    | `gemini-3.6-flash-high`    | 1047       |
-| `gemini-3.6-flash-medium`  | `gemini-3.6-flash-medium`  | 1046       |
-| `gemini-3.6-flash-low`     | `gemini-3.6-flash-low`     | 1048       |
-| `gemini-3.8-flash`         | `gemini-3.8-flash-medium`  | 1052       |
-| `gemini-3.7-flash`         | `gemini-3.7-flash-medium`  | 1049       |
-| `gemini-3.6-flash`         | `gemini-3.6-flash-medium`  | 1046       |
-| `gemini-flash` / `flash`   | `gemini-3.6-flash-medium`  | 1046       |
-| `gpt-oss-120b`             | `gpt-oss-120b-medium`      | 342        |
+| Model ID                   | Provider  | Description                     | Context Window   | Enum value |
+| -------------------------- | --------- | ------------------------------- | ---------------- | ---------- |
+| `gemini-3.8-flash-high`    | Google    | Gemini 3.8 Flash (High)         | 1,048,576 tokens | 1053       |
+| `gemini-3.8-flash-medium`  | Google    | Gemini 3.8 Flash (Medium)       | 1,048,576 tokens | 1052       |
+| `gemini-3.8-flash-low`     | Google    | Gemini 3.8 Flash (Low)          | 1,048,576 tokens | 1054       |
+| `gemini-3.7-flash-high`    | Google    | Gemini 3.7 Flash (High)         | 1,048,576 tokens | 1050       |
+| `gemini-3.7-flash-medium`  | Google    | Gemini 3.7 Flash (Medium)       | 1,048,576 tokens | 1049       |
+| `gemini-3.7-flash-low`     | Google    | Gemini 3.7 Flash (Low)          | 1,048,576 tokens | 1051       |
+| `gemini-3.6-flash-high`    | Google    | Gemini 3.6 Flash (High)         | 1,048,576 tokens | 1047       |
+| `gemini-3.6-flash-medium`  | Google    | Gemini 3.6 Flash (Medium)       | 1,048,576 tokens | 1046       |
+| `gemini-3.6-flash-low`     | Google    | Gemini 3.6 Flash (Low)          | 1,048,576 tokens | 1048       |
+| `gemini-3.1-pro-high`      | Google    | Gemini 3.1 Pro — High thinking  | 1,048,576 tokens | 1037       |
+| `gemini-3.1-pro-low`       | Google    | Gemini 3.1 Pro — Low thinking   | 1,048,576 tokens | 1036       |
+| `claude-sonnet-4-6`        | Anthropic | Claude Sonnet 4.6 with Thinking | 200,000 tokens   | 1035       |
+| `claude-opus-4-6-thinking` | Anthropic | Claude Opus 4.6 with Thinking   | 200,000 tokens   | 1026       |
+| `gpt-oss-120b-medium`      | OpenAI    | GPT-OSS 120B Medium             | 128,000 tokens   | 342        |
+
+Convenience aliases (`antigravity-*`, `gpt-oss-120b`, `gemini-flash`, etc.) are hidden from `/v1/models` but resolve to their corresponding canonical model.

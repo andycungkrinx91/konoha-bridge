@@ -167,10 +167,18 @@ async function handleAnthropicMessages(ctx, req, res) {
   const resolved = resolveModel(payload.model);
   log(ctx, `📡 [Anthropic] Model: ${resolved.key} (enum=${resolved.value})`);
 
-  const modelEnum = VALUE_TO_MODEL_ENUM[resolved.value];
+  let modelEnum = VALUE_TO_MODEL_ENUM[resolved?.value];
   if (!modelEnum) {
-    const msg = `No raw model enum mapping for value ${resolved.value}.`;
-    return sendJson(res, 400, { type: 'error', error: { type: 'invalid_request_error', message: msg } });
+    const key = String(resolved?.key || payload.model || '').toLowerCase();
+    if (key.includes('opus')) {
+      modelEnum = 'MODEL_PLACEHOLDER_M26';
+    } else {
+      modelEnum = 'MODEL_PLACEHOLDER_M35'; // Default Claude to Sonnet
+    }
+    log(
+      ctx,
+      `⚠️ Unmapped model value '${resolved?.value}' for '${resolved?.key || payload.model}' — falling back to ${modelEnum}`,
+    );
   }
 
   // Rate limit guard (reuse same limits as OpenAI endpoint)

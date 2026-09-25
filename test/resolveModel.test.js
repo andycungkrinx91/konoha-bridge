@@ -224,4 +224,29 @@ describe('resolveModel', () => {
     assert.equal(result.key, 'gemini-3.6-flash-medium');
     assert.equal(result.value, 1046);
   });
+
+  // ── External Claude client model names ──
+  it('resolves Claude 3.5 Sonnet to claude-sonnet-4-6 with valid value', () => {
+    const result = resolveModel('claude-3-5-sonnet-20241022');
+    assert.equal(result.key, 'claude-sonnet-4-6');
+    assert.equal(result.value, 1035);
+  });
+
+  it('resolves Claude 3.7 Sonnet to claude-sonnet-4-6 with valid value', () => {
+    const result = resolveModel('claude-3-7-sonnet-20250219');
+    assert.equal(result.key, 'claude-sonnet-4-6');
+    assert.equal(result.value, 1035);
+  });
+
+  it('resolves Claude 3 Opus to claude-opus-4-6-thinking with valid value', () => {
+    const result = resolveModel('claude-3-opus-20240229');
+    assert.equal(result.key, 'claude-opus-4-6-thinking');
+    assert.equal(result.value, 1026);
+  });
+
+  it('resolves Claude 3.5 Haiku to claude-sonnet-4-6 with valid value', () => {
+    const result = resolveModel('claude-3-5-haiku-20241022');
+    assert.equal(result.key, 'claude-sonnet-4-6');
+    assert.equal(result.value, 1035);
+  });
 });

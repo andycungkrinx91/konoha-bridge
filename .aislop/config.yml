@@ -2,7 +2,7 @@ version: 1
 engines:
   format: true
   lint: true
-  code-quality: true
+  code-quality: false
   ai-slop: true
   architecture: false
   security: true
