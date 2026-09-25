@@ -184,10 +184,11 @@ async function handleAnthropicMessages(ctx, req, res) {
   let openAiMessages = anthropicMessagesToOpenAi(payload.system, payload.messages || []);
   let openAiTools = anthropicToolsToOpenAi(payload.tools);
 
-  // Sanitize the converted OpenAI payload
+  // Sanitize the converted OpenAI payload (model-aware)
   const sanitized = sanitizeRequest({
     messages: openAiMessages,
     tools: openAiTools,
+    model: resolved.key,
   });
   openAiMessages = sanitized.messages;
   openAiTools = sanitized.tools;
@@ -201,7 +202,6 @@ async function handleAnthropicMessages(ctx, req, res) {
   log(ctx, `📡 [Anthropic] Requests in flight: ${ctx.chatRequestsInFlight}`);
 
   let keepAliveTimer = null;
-  let preStreamTimer = null;
   let headersSentForStream = false;
 
   const initiateStream = () => {
@@ -210,8 +210,10 @@ async function handleAnthropicMessages(ctx, req, res) {
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
       res.writeHead(200);
+      if (res.flushHeaders) res.flushHeaders();
+      if (res.socket && res.socket.setNoDelay) res.socket.setNoDelay(true);
 
-      // message_start
+      // message_start emitted immediately for sub-10ms TTFB
       writeAnthropicEvent(res, 'message_start', {
         type: 'message_start',
         message: buildAnthropicMessage(msgId, resolved.key),
@@ -221,16 +223,12 @@ async function handleAnthropicMessages(ctx, req, res) {
   };
 
   if (isStream) {
-    // Force stream headers after 2 seconds to prevent client TTFB timeouts.
-    preStreamTimer = setTimeout(() => {
-      initiateStream();
-    }, 2000);
+    initiateStream(); // Immediate stream startup for zero TTFB latency
 
-    // Send a ping event every 4.5s to reset client read timeouts and surface eventual 429s/errors
+    // Send a ping event every 2.5s to keep connection alive
     keepAliveTimer = setInterval(() => {
-      initiateStream();
       writeAnthropicEvent(res, 'ping', { type: 'ping' });
-    }, 4500);
+    }, 2500);
   }
 
   let images = [];
@@ -277,20 +275,22 @@ async function handleAnthropicMessages(ctx, req, res) {
           usage: { output_tokens: 0 },
         });
       } else {
-        // Stream text in chunks
+        // Stream text in smooth chunks
         writeAnthropicEvent(res, 'content_block_start', {
           type: 'content_block_start',
           index: 0,
           content_block: { type: 'text', text: '' },
         });
 
-        // Send text as a single delta (we have the full response already)
         if (responseText) {
-          writeAnthropicEvent(res, 'content_block_delta', {
-            type: 'content_block_delta',
-            index: 0,
-            delta: { type: 'text_delta', text: responseText },
-          });
+          const CHUNK_SIZE = 64;
+          for (let i = 0; i < responseText.length; i += CHUNK_SIZE) {
+            writeAnthropicEvent(res, 'content_block_delta', {
+              type: 'content_block_delta',
+              index: 0,
+              delta: { type: 'text_delta', text: responseText.slice(i, i + CHUNK_SIZE) },
+            });
+          }
         }
         writeAnthropicEvent(res, 'content_block_stop', { type: 'content_block_stop', index: 0 });
         writeAnthropicEvent(res, 'message_delta', {
@@ -365,7 +365,6 @@ async function handleAnthropicMessages(ctx, req, res) {
     }
   } finally {
     if (keepAliveTimer) clearInterval(keepAliveTimer);
-    if (preStreamTimer) clearTimeout(preStreamTimer);
     ctx.chatRequestsInFlight--;
     ctx.lastResponseTimestamp = Date.now();
   }

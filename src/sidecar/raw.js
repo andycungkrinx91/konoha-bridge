@@ -202,9 +202,8 @@ function parseToolCalls(responseText) {
 let inferenceQueue = Promise.resolve();
 
 /**
- * Serialize GetModelResponse calls: only ONE runs at a time, with a 2-second
- * cooldown between consecutive calls. This prevents the sidecar from returning
- * RESOURCE_EXHAUSTED when multiple clients fire parallel requests.
+ * Execute GetModelResponse calls in sequence without artificial sleep delay.
+ * Allows instant execution (<3s) while maintaining graceful error handling.
  */
 function enqueueInference(fn) {
   let resolve, reject;
@@ -212,14 +211,15 @@ function enqueueInference(fn) {
     resolve = res;
     reject = rej;
   });
-  inferenceQueue = inferenceQueue.then(async () => {
-    try {
-      resolve(await fn());
-    } catch (err) {
-      reject(err);
-    }
-    await new Promise((r) => setTimeout(r, 2000));
-  });
+  inferenceQueue = inferenceQueue
+    .then(async () => {
+      try {
+        resolve(await fn());
+      } catch (err) {
+        reject(err);
+      }
+    })
+    .catch(() => {});
   return resultPromise;
 }
 
@@ -250,27 +250,27 @@ async function callRawInference(ctx, messages, modelEnum, tools = null, images =
   }
   const mainCsrf = info.csrfTokens[0];
 
-  // Find a working LS port — try non-extension ports first, then extension port as fallback.
-  // The LS ports may have died while the extension port stays alive; trying all ports
-  // avoids 'No reachable LS port' when the sidecar recycles its gRPC listeners.
-  const lsPorts = [
-    ...info.actualPorts.filter((p) => p !== info.extensionServerPort),
-    info.extensionServerPort, // last resort — extension port may also serve LS gRPC
-  ];
-  let lsPort = null;
-  for (const port of lsPorts) {
-    try {
-      await makeH2JsonCall(port, mainCsrf, info.certPath, 'GetStatus', {});
-      lsPort = port;
-      break;
-    } catch {
-      // try next port
+  // Try cached active LS port first for zero network setup latency
+  let lsPort = ctx.activeLsPort;
+  if (!lsPort || !info.actualPorts.includes(lsPort)) {
+    const lsPorts = [...info.actualPorts.filter((p) => p !== info.extensionServerPort), info.extensionServerPort];
+    lsPort = null;
+    for (const port of lsPorts) {
+      try {
+        await makeH2JsonCall(port, mainCsrf, info.certPath, 'GetStatus', {});
+        lsPort = port;
+        ctx.activeLsPort = port;
+        break;
+      } catch {
+        // try next port
+      }
     }
   }
+
   if (!lsPort) {
-    // Invalidate sidecar cache so next request re-discovers fresh ports
     ctx.sidecarInfo = null;
     ctx.sidecarInfoTimestamp = 0;
+    ctx.activeLsPort = null;
     throw new Error('No reachable LS port');
   }
 
@@ -350,6 +350,9 @@ async function callRawInference(ctx, messages, modelEnum, tools = null, images =
       return { content: responseText, toolCalls: null };
     } catch (err) {
       const errMsg = err.message || '';
+      if (errMsg.includes('H2 connect') || errMsg.includes('No reachable LS port') || errMsg.includes('ECONNREFUSED')) {
+        ctx.activeLsPort = null;
+      }
       const isRetryable =
         errMsg.includes('RESOURCE_EXHAUSTED') ||
         errMsg.includes('model not found') ||

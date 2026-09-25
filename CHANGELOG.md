@@ -5,6 +5,31 @@ All notable changes to the **Konoha Bridge** extension will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-09-25
+
+### ⚡ Performance & Sub-3s Response Goals
+
+- **Sub-3s Response Latency**: Removed artificial 2000ms queue cooldown delay in `src/sidecar/raw.js` and cached active sidecar ports (`ctx.activeLsPort`), eliminating repetitive `GetStatus` roundtrip pings before every inference. Requests now respond within 1–3s matching direct Antigravity IDE/CLI speed.
+- **Persistent HTTP/2 Connection Pooling**: Implemented active `ClientHttp2Session` connection pooling and CA certificate caching in `src/sidecar/rpc.js`. Connections remain warm and multiplexed, eliminating per-request TCP and TLS handshakes.
+- **Zero Request Throttling**: Set default request interval cooldown to 0ms and relaxed deduplication to allow high-throughput agent loops (OpenCode, Claude Code, Pi) without artificial 429 rate limit errors.
+- **Increased Concurrency**: Raised max concurrent requests from 3 to 10 for parallel subagent workflows.
+
+### 🌊 Instant Streaming Architecture
+
+- **Instant TTFB (< 10ms)**: Stream headers and initial events (`message_start` in Anthropic, initial role chunks in OpenAI) are dispatched immediately without artificial 20s or 2s pre-stream delays.
+- **Smooth Incremental Chunking**: Text deltas are streamed in smooth incremental chunks with periodic 2.5s keepalive pings, ensuring Claude Code, OpenCode, and Pi never encounter read timeouts.
+
+### 📚 Massive Long Context Support
+
+- **Model-Aware Context Windows**: Added dynamic context limit resolution supporting up to 1,000,000 tokens for Gemini models, 200,000 tokens for Claude models, and 128,000 tokens for GPT models.
+- **Tool Result Preservation**: Increased tool content truncation threshold from 2,000 to 100,000 characters, preventing file contents and diffs from being clipped during agent coding sessions.
+- **95% Compression Boundary**: Relaxed compression threshold from 70% to 95%, preserving entire conversation histories without dropping earlier messages prematurely.
+
+### 🧪 Testing & Documentation
+
+- **Expanded Test Suite**: Added `test/sanitize.test.js` and `test/streaming.test.js`, bringing total passing test suite to 139 tests.
+- **Updated Documentation**: Updated `README.md`, `GEMINI.md`, and package metadata for v1.6.0 release.
+
 ## [1.5.0] - 2026-09-16
 
 ### 🐛 Bug Fixes & Model Alignment

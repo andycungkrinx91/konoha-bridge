@@ -2,7 +2,7 @@
   "name": "konoha-bridge",
   "displayName": "Konoha Bridge",
   "description": "Exposes the running Antigravity instance as a local OpenAI-compatible API on localhost:1313",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "publisher": "andycungkrinx91",
   "license": "MIT",
   "icon": "assets/icon.png",

@@ -147,10 +147,11 @@ async function handleGeminiGenerateContent(ctx, req, res, modelFromPath) {
   );
   let openAiTools = geminiToolsToOpenAi(payload.tools);
 
-  // Sanitize the converted OpenAI payload
+  // Sanitize the converted OpenAI payload (model-aware)
   const sanitized = sanitizeRequest({
     messages: openAiMessages,
     tools: openAiTools,
+    model: resolved.key,
   });
   openAiMessages = sanitized.messages;
   openAiTools = sanitized.tools;

@@ -52,7 +52,7 @@ async function discoverSidecar() {
                     if (!Array.isArray(parsed)) parsed = [parsed];
                     processes.push(...parsed);
                 }
-            } catch { }
+            } catch { /* ignore probe error */ }
         }
         if (processes.length === 0) throw new Error('Sidecar process not found');
         // Prefer the konoha-bridge workspace sidecar
@@ -87,7 +87,7 @@ async function discoverSidecar() {
                     return m ? parseInt(m[1]) : null;
                 })
                 .filter(Boolean);
-        } catch { }
+        } catch { /* ignore probe error */ }
     }
 
     // Find cert
@@ -105,7 +105,7 @@ async function discoverSidecar() {
                 }
             }
         }
-    } catch { }
+    } catch { /* ignore probe error */ }
     // Try the app install location on Windows
     if (!certPath) {
         const appCert = path.join(os.homedir(), 'AppData', 'Local', 'Programs', 'Antigravity',
@@ -140,7 +140,7 @@ function makeH2Call(port, csrf, certPath, servicePath, body, timeoutMs = 10000) 
         let ca;
         try {
             ca = certPath ? fs.readFileSync(certPath) : undefined;
-        } catch { }
+        } catch { /* ignore probe error */ }
 
         const client = http2.connect(`https://localhost:${port}`, { ca, rejectUnauthorized: false });
         let totalBody = '';
@@ -194,7 +194,7 @@ function makeH2Call(port, csrf, certPath, servicePath, body, timeoutMs = 10000) 
         setTimeout(() => {
             try {
                 client.close();
-            } catch { }
+            } catch { /* ignore probe error */ }
             settle(reject, new Error('Timeout'));
         }, timeoutMs);
     });

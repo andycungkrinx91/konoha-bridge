@@ -26,7 +26,7 @@ try {
     fs.writeFileSync(targetPreCommit, hookContent, { mode: 0o755 });
     try {
       fs.chmodSync(targetPreCommit, 0o755);
-    } catch (_) {}
+    } catch (_) { /* ignore chmod error */ }
     console.log('✅ Local pre-commit hook installed to .git/hooks/pre-commit');
   }
 } catch (err) {

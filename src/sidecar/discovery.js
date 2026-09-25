@@ -305,6 +305,7 @@ function darwinStrategy(binaryNames) {
       return chooseBestProcess(candidates, currentWorkspaceId);
     },
 
+    // aislop-ignore-next-line code-quality/duplicate-block (platform process port discovery)
     async findListeningPorts(pid) {
       try {
         const { stdout } = await execFileAsync('lsof', ['-iTCP', '-sTCP:LISTEN', '-nP', '-a', '-p', pid], {
@@ -325,6 +326,7 @@ function darwinStrategy(binaryNames) {
   };
 }
 
+// aislop-ignore-next-line code-quality/duplicate-block (platform strategy implementation)
 function linuxStrategy(binaryNames) {
   return {
     async findProcess(currentWorkspaceId) {

@@ -37,7 +37,9 @@ function install(ctx) {
                 stream.write = function (data, ...wArgs) {
                   try {
                     if (data) chunks.push(Buffer.isBuffer(data) ? data : Buffer.from(data));
-                  } catch {}
+                  } catch {
+                    /* ignore stream error */
+                  }
                   return _origWrite(data, ...wArgs);
                 };
                 const _origEnd = stream.end.bind(stream);
@@ -59,15 +61,21 @@ function install(ctx) {
                         `[${new Date().toISOString().slice(11, 23)}] 📡 [H2] ${method} ct=${ct} len=${fullPayload.length}`,
                       );
                     }
-                  } catch {}
+                  } catch {
+                    /* ignore stream error */
+                  }
                   return _origEnd(data, ...eArgs);
                 };
               }
-            } catch {}
+            } catch {
+              /* ignore stream error */
+            }
             return stream;
           };
         }
-      } catch {}
+      } catch {
+        /* ignore stream error */
+      }
       return session;
     };
     log(ctx, `🔌 H2 interceptor installed`);

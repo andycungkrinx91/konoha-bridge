@@ -11,10 +11,18 @@ function estimateTokens(obj) {
   return Math.ceil(str.length / CHARS_PER_TOKEN);
 }
 
-// Sidecar starts dropping connections or OOMing heavily around ~600k-700k chars for high-end models.
-// We target a safe limit of 500k chars (~125,000 tokens) to prevent ECONNRESET.
-const SAFE_CONTEXT_TOKEN_LIMIT = 125000;
-const COMPRESSION_THRESHOLD = 0.7; // Compress if we exceed 70% of the limit (87.5k tokens)
+// Support massive context windows (Gemini 1M+, Claude 200k)
+const SAFE_CONTEXT_TOKEN_LIMIT = 1000000;
+const COMPRESSION_THRESHOLD = 0.95; // Only compress if we exceed 95% of the limit
+
+function resolveContextLimit(model) {
+  if (!model || typeof model !== 'string') return SAFE_CONTEXT_TOKEN_LIMIT;
+  const m = model.toLowerCase();
+  if (m.includes('claude')) return 200000;
+  if (m.includes('gpt-oss') || m.includes('gpt-4') || m.includes('120b')) return 128000;
+  if (m.includes('gemini')) return 1000000;
+  return SAFE_CONTEXT_TOKEN_LIMIT;
+}
 
 /**
  * Normalizes tool names and strips empty ones
@@ -91,29 +99,31 @@ function fixMissingToolResponses(messages) {
 }
 
 /**
- * Compress context by trimming tool results and dropping older messages
+ * Compress context by trimming oversized tool results and dropping older messages
+ * only when approaching the model's actual context boundary.
  */
-function compressContext(messages, tools) {
+function compressContext(messages, tools, model = null) {
   if (!Array.isArray(messages) || messages.length === 0) return messages;
 
+  const limit = resolveContextLimit(model);
   const reservedTokens = tools ? estimateTokens(tools) : 0;
-  const threshold = Math.max(1, Math.floor((SAFE_CONTEXT_TOKEN_LIMIT - reservedTokens) * COMPRESSION_THRESHOLD));
+  const threshold = Math.max(10000, Math.floor((limit - reservedTokens) * COMPRESSION_THRESHOLD));
 
   let currentTokens = estimateTokens(messages);
 
-  // If we are under the threshold, do nothing
+  // If we are under the threshold, do nothing - preserve full fidelity
   if (currentTokens <= threshold) {
     return messages;
   }
 
   let compressed = [...messages];
 
-  // Layer 1: Trim long tool responses
+  // Layer 1: Trim exceptionally long tool responses (> 100k chars / ~25k tokens)
   compressed = compressed.map((msg) => {
-    if (msg.role === 'tool' && typeof msg.content === 'string' && msg.content.length > 2000) {
+    if (msg.role === 'tool' && typeof msg.content === 'string' && msg.content.length > 100000) {
       return {
         ...msg,
-        content: msg.content.substring(0, 2000) + '\n... [truncated to prevent memory crash]',
+        content: msg.content.substring(0, 100000) + '\n... [truncated to prevent memory crash]',
       };
     }
     return msg;
@@ -128,11 +138,11 @@ function compressContext(messages, tools) {
   const nonSystem = compressed.filter((m) => m.role !== 'system' && m.role !== 'developer');
 
   let keep = nonSystem.length;
-  while (keep > 2) {
+  while (keep > 10) {
     const candidate = [...system, ...nonSystem.slice(-keep)];
     const tokens = estimateTokens(candidate);
     if (tokens <= threshold) break;
-    keep = Math.max(2, Math.floor(keep * 0.7)); // Drop 30% each iteration
+    keep = Math.max(10, Math.floor(keep * 0.7)); // Drop 30% each iteration
   }
 
   const finalMessages = [...system, ...nonSystem.slice(-keep)];
@@ -167,12 +177,12 @@ function sanitizeRequest(payload) {
     newPayload.tools = sanitizeTools(newPayload.tools);
   }
 
-  // 3. Sanitize and compress messages
+  // 3. Sanitize and compress messages (model-aware)
   if (newPayload.messages) {
     let messages = newPayload.messages;
     messages = sanitizeMessagesNames(messages);
     messages = fixMissingToolResponses(messages);
-    messages = compressContext(messages, newPayload.tools);
+    messages = compressContext(messages, newPayload.tools, newPayload.model);
     newPayload.messages = messages;
   }
 
@@ -185,4 +195,6 @@ module.exports = {
   sanitizeMessagesNames,
   fixMissingToolResponses,
   compressContext,
+  resolveContextLimit,
+  SAFE_CONTEXT_TOKEN_LIMIT,
 };

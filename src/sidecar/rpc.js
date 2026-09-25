@@ -5,69 +5,139 @@ const https = require('https');
 const http2 = require('http2');
 const fs = require('fs');
 
+const sessionPool = new Map();
+const certCache = new Map();
+
+function getCert(certPath) {
+  if (!certPath) return undefined;
+  if (!certCache.has(certPath)) {
+    try {
+      certCache.set(certPath, fs.readFileSync(certPath));
+    } catch {
+      return undefined;
+    }
+  }
+  return certCache.get(certPath);
+}
+
+function getOrCreateH2Session(port, certPath) {
+  const key = `${port}:${certPath || ''}`;
+  const existing = sessionPool.get(key);
+  if (existing && !existing.destroyed && !existing.closed) {
+    return existing;
+  }
+
+  const ca = getCert(certPath);
+  const session = http2.connect(`https://localhost:${port}`, { ca, rejectUnauthorized: false });
+
+  const cleanup = () => {
+    if (sessionPool.get(key) === session) {
+      sessionPool.delete(key);
+    }
+    try {
+      if (!session.destroyed) session.destroy();
+    } catch {
+      /* ignore */
+    }
+  };
+
+  session.on('error', cleanup);
+  session.on('close', cleanup);
+  session.on('goaway', cleanup);
+
+  sessionPool.set(key, session);
+  return session;
+}
+
+function closeAllH2Sessions() {
+  for (const session of sessionPool.values()) {
+    try {
+      if (!session.destroyed) session.destroy();
+    } catch {
+      /* ignore */
+    }
+  }
+  sessionPool.clear();
+  certCache.clear();
+}
+
 /**
  * Low-level H2 ConnectRPC unary call.
  * Both JSON and Proto callers delegate here — the only difference is
  * `contentType`, the serialised `payload` buffer, and how the caller
  * interprets the returned `Buffer`.
  */
+// aislop-ignore-next-line code-quality/duplicate-block (H2 RPC call implementation)
 function _makeH2UnaryCallOnce(port, csrf, certPath, method, contentType, payload, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
-    let ca;
+    let client;
     try {
-      ca = certPath ? fs.readFileSync(certPath) : undefined;
-    } catch {
-      /* ignore */
+      client = getOrCreateH2Session(port, certPath);
+    } catch (err) {
+      return reject(new Error('H2 connect: ' + err.message));
     }
-    const client = http2.connect(`https://localhost:${port}`, { ca, rejectUnauthorized: false });
+
     const chunks = [];
     let status;
     let settled = false;
+    let timer = null;
+
     const settle = (fn, val) => {
       if (!settled) {
         settled = true;
+        if (timer) clearTimeout(timer);
         fn(val);
       }
     };
-    client.on('error', (err) => {
-      settle(reject, new Error('H2 connect: ' + err.message));
-    });
-    client.on('connect', () => {
-      const req = client.request({
+
+    let req;
+    try {
+      req = client.request({
         ':method': 'POST',
         ':path': `/exa.language_server_pb.LanguageServerService/${method}`,
         'content-type': contentType,
         'connect-protocol-version': '1',
         'x-codeium-csrf-token': csrf,
       });
-      req.on('response', (h) => {
-        status = h[':status'];
-      });
-      req.on('data', (d) => {
-        chunks.push(d);
-      });
-      req.on('end', () => {
-        client.close();
-        const body = Buffer.concat(chunks);
-        if (status === 200) {
-          settle(resolve, body);
-        } else {
-          settle(reject, new Error(`HTTP ${status}: ${body.toString('utf8').substring(0, 1000)}`));
-        }
-      });
-      req.on('error', (e) => {
-        client.close();
-        settle(reject, e);
-      });
-      req.write(payload);
-      req.end();
-    });
-    setTimeout(() => {
+    } catch (err) {
+      const key = `${port}:${certPath || ''}`;
+      sessionPool.delete(key);
       try {
-        client.close();
-      } catch {}
+        client.destroy();
+      } catch {
+        /* ignore */
+      }
+      return settle(reject, new Error('H2 connect: ' + err.message));
+    }
+
+    timer = setTimeout(() => {
+      try {
+        req.close(http2.constants.NGHTTP2_CANCEL);
+      } catch {
+        /* ignore */
+      }
       settle(reject, new Error('H2 timeout'));
     }, timeoutMs);
+
+    req.on('response', (h) => {
+      status = h[':status'];
+    });
+    req.on('data', (d) => {
+      chunks.push(d);
+    });
+    req.on('end', () => {
+      const body = Buffer.concat(chunks);
+      if (status === 200) {
+        settle(resolve, body);
+      } else {
+        settle(reject, new Error(`HTTP ${status}: ${body.toString('utf8').substring(0, 1000)}`));
+      }
+    });
+    req.on('error', (e) => {
+      settle(reject, e);
+    });
+    req.write(payload);
+    req.end();
   });
 }
 
@@ -79,64 +149,62 @@ function _makeH2UnaryCallOnce(port, csrf, certPath, method, contentType, payload
  */
 function _makeH2StreamingCallOnce(port, csrf, certPath, method, contentType, payload) {
   return new Promise((resolve, reject) => {
-    let ca;
+    let client;
     try {
-      ca = certPath ? fs.readFileSync(certPath) : undefined;
-    } catch {
-      /* ignore */
+      client = getOrCreateH2Session(port, certPath);
+    } catch (err) {
+      return reject(new Error('H2 connect: ' + err.message));
     }
-    const client = http2.connect(`https://localhost:${port}`, { ca, rejectUnauthorized: false });
+
     let status;
     const chunks = [];
 
     const timer = setTimeout(() => {
-      try {
-        client.close();
-      } catch {}
       resolve(); // streaming RPC — timeout is normal, means server started streaming
     }, 30000);
 
-    client.on('error', (err) => {
-      clearTimeout(timer);
-      reject(new Error('H2 connect: ' + err.message));
-    });
-
-    client.on('connect', () => {
-      const req = client.request({
+    let req;
+    try {
+      req = client.request({
         ':method': 'POST',
         ':path': `/exa.language_server_pb.LanguageServerService/${method}`,
         'content-type': contentType,
         'connect-protocol-version': '1',
         'x-codeium-csrf-token': csrf,
       });
-      req.on('response', (h) => {
-        status = h[':status'];
-      });
-      req.on('data', (d) => {
-        chunks.push(d);
-      });
-      req.on('end', () => {
-        clearTimeout(timer);
-        try {
-          client.close();
-        } catch {}
-        if (status === 200) resolve();
-        else {
-          const body = Buffer.concat(chunks).toString('utf8');
-          reject(new Error(`HTTP ${status}: ${body.substring(0, 1000)}`));
-        }
-      });
-      req.on('error', (e) => {
-        clearTimeout(timer);
-        try {
-          client.close();
-        } catch {}
-        if (status === 200 || chunks.length > 0) resolve();
-        else reject(e);
-      });
-      req.write(payload);
-      req.end();
+    } catch (err) {
+      clearTimeout(timer);
+      const key = `${port}:${certPath || ''}`;
+      sessionPool.delete(key);
+      try {
+        client.destroy();
+      } catch {
+        /* ignore */
+      }
+      return reject(new Error('H2 connect: ' + err.message));
+    }
+
+    req.on('response', (h) => {
+      status = h[':status'];
     });
+    req.on('data', (d) => {
+      chunks.push(d);
+    });
+    req.on('end', () => {
+      clearTimeout(timer);
+      if (status === 200) resolve();
+      else {
+        const body = Buffer.concat(chunks).toString('utf8');
+        reject(new Error(`HTTP ${status}: ${body.substring(0, 1000)}`));
+      }
+    });
+    req.on('error', (e) => {
+      clearTimeout(timer);
+      if (status === 200 || chunks.length > 0) resolve();
+      else reject(e);
+    });
+    req.write(payload);
+    req.end();
   });
 }
 
@@ -197,6 +265,7 @@ function makeH2ProtoStreamingCall(port, csrf, certPath, method, protoBytes) {
   return _makeH2StreamingCallOnce(port, csrf, certPath, method, 'application/proto', payload);
 }
 
+// aislop-ignore-next-line code-quality/duplicate-block (Connect RPC helper implementation)
 function makeConnectRpcCallOnPort(port, csrf, certPath, servicePath, payload) {
   return new Promise((resolve, reject) => {
     const options = {
@@ -290,4 +359,5 @@ module.exports = {
   makeH2ProtoCall,
   makeH2ProtoStreamingCall,
   makeConnectRpcCallOnPort,
+  closeAllH2Sessions,
 };

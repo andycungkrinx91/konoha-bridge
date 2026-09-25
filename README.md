@@ -87,22 +87,22 @@ The extension runs inside Antigravity's process, discovers the sidecar via proce
 
 ```bash
 # Antigravity IDE CLI
-antigravity --install-extension konoha-bridge-1.5.0.vsix
+antigravity --install-extension konoha-bridge-1.6.0.vsix
 
 # Standard VS Code CLI
-code --install-extension konoha-bridge-1.5.0.vsix
+code --install-extension konoha-bridge-1.6.0.vsix
 
 # Cursor IDE CLI
-cursor --install-extension konoha-bridge-1.5.0.vsix
+cursor --install-extension konoha-bridge-1.6.0.vsix
 ```
 
 #### Via IDE Interface (GUI):
 
-1. Download or locate `konoha-bridge-1.5.0.vsix` (from the repo root or [Releases](https://github.com/andycungkrinx91/konoha-bridge/releases)).
+1. Download or locate `konoha-bridge-1.6.0.vsix` (from the repo root or [Releases](https://github.com/andycungkrinx91/konoha-bridge/releases)).
 2. Open Antigravity / VS Code / Cursor.
 3. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 4. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions panel.
-5. Select **Install from VSIX...** and choose `konoha-bridge-1.5.0.vsix`.
+5. Select **Install from VSIX...** and choose `konoha-bridge-1.6.0.vsix`.
 6. Reload the window (`Ctrl+Shift+P` → `Developer: Reload Window`).
 
 ---

@@ -13,7 +13,7 @@ function createContext() {
   return {
     // Identity (for Metadata proto payloads)
     sessionId: randomUUID() + Date.now().toString(),
-    extensionVersion: '1.2.0',
+    extensionVersion: '1.6.0',
 
     // VS Code UI
     /** @type {import('vscode').OutputChannel | null} */
@@ -25,21 +25,22 @@ function createContext() {
     /** @type {import('http').Server | null} */
     server: null,
 
-    // Sidecar discovery cache
+    // Sidecar discovery cache & active port
     sidecarInfo: null,
     sidecarInfoTimestamp: 0,
+    activeLsPort: null,
     SIDECAR_CACHE_TTL: 300000, // 5 minutes (discovery is expensive on Windows)
 
     // Concurrency guard
     chatRequestsInFlight: 0,
-    MAX_CONCURRENT_REQUESTS: 3,
+    MAX_CONCURRENT_REQUESTS: 10,
 
     // Rate limiting / loop-breaking
     lastResponseTimestamp: 0,
-    MIN_REQUEST_INTERVAL_MS: 200, // 200ms cooldown between responses
+    MIN_REQUEST_INTERVAL_MS: 0, // 0ms cooldown for high-throughput subagent calls
     lastUserMessageHash: '',
     lastUserMessageTimestamp: 0,
-    DEDUP_WINDOW_MS: 1000, // 1s dedup window
+    DEDUP_WINDOW_MS: 0, // 0ms dedup for fast sequential agent turns
 
     // CSRF token intercepted from Antigravity's own outgoing requests
     interceptedCsrf: null,

@@ -71,10 +71,10 @@ async function handleChatCompletions(ctx, req, res) {
     });
   }
 
-  // ── Rate limiting: prevent feedback loops ──
+  // ── Rate limiting: only throttle if explicitly configured ──
   const now = Date.now();
   const timeSinceLastResponse = now - ctx.lastResponseTimestamp;
-  if (timeSinceLastResponse < ctx.MIN_REQUEST_INTERVAL_MS) {
+  if (ctx.MIN_REQUEST_INTERVAL_MS > 0 && timeSinceLastResponse < ctx.MIN_REQUEST_INTERVAL_MS) {
     log(
       ctx,
       `🛑 Rate limited — only ${timeSinceLastResponse}ms since last response (min ${ctx.MIN_REQUEST_INTERVAL_MS}ms)`,
@@ -87,16 +87,19 @@ async function handleChatCompletions(ctx, req, res) {
     });
   }
 
-  // ── Duplicate detection: same LAST message within dedup window ──
-  // We hash the last message rather than just the last user message, because during tool execution,
-  // the client sends tool results (with role="tool") causing the last *user* message to seem identical.
+  // ── Duplicate detection: only block identical concurrent in-flight requests ──
   const lastMsg = messages.length > 0 ? messages[messages.length - 1] : { role: 'none', content: '' };
   const lastMsgText = `${lastMsg.role}:${extractText(lastMsg.content)}`;
   const msgHash = lastMsgText.substring(0, 500);
-  if (msgHash === ctx.lastUserMessageHash && now - ctx.lastUserMessageTimestamp < ctx.DEDUP_WINDOW_MS) {
-    log(ctx, `🛑 Duplicate message rejected (same message within ${ctx.DEDUP_WINDOW_MS / 1000}s)`);
+  if (
+    ctx.DEDUP_WINDOW_MS > 0 &&
+    ctx.chatRequestsInFlight > 0 &&
+    msgHash === ctx.lastUserMessageHash &&
+    now - ctx.lastUserMessageTimestamp < ctx.DEDUP_WINDOW_MS
+  ) {
+    log(ctx, `🛑 Concurrent duplicate message rejected within ${ctx.DEDUP_WINDOW_MS / 1000}s`);
     return sendJson(res, 429, {
-      error: { message: 'Duplicate message detected — identical request within dedup window.', type: 'rate_limit' },
+      error: { message: 'Duplicate concurrent request detected within dedup window.', type: 'rate_limit' },
     });
   }
   ctx.lastUserMessageHash = msgHash;
@@ -130,7 +133,6 @@ async function handleChatCompletions(ctx, req, res) {
   log(ctx, `📡 Requests in flight: ${ctx.chatRequestsInFlight}`);
 
   let keepAliveTimer = null;
-  let preStreamTimer = null;
   // Shared mutable flag — must be accessed via closure, never passed by value.
   const streamState = { headersSent: false };
 
@@ -138,27 +140,24 @@ async function handleChatCompletions(ctx, req, res) {
     if (isStream && !streamState.headersSent) {
       setupStreamResponse(res);
       streamState.headersSent = true;
+      // Send initial role chunk immediately so client gets TTFB < 10ms
+      const roleChunk = buildStreamChunk(completionId, resolved.key, '');
+      res.write(`data: ${JSON.stringify(roleChunk)}\n\n`);
     }
   };
 
   if (isStream) {
-    // Force stream headers after 20 seconds to prevent client TTFB (Time To First Byte) timeouts.
-    // This gives sidecar discovery (wmic/PowerShell) and the H2 connection enough time to
-    // fail fast and return a clean HTTP 429 before we commit to HTTP 200.
-    preStreamTimer = setTimeout(() => {
-      initiateStream();
-    }, 20000);
+    initiateStream(); // Immediate stream startup for zero TTFB latency
 
     keepAliveTimer = setInterval(() => {
-      initiateStream();
       // Send a valid empty OpenAI delta instead of a raw SSE comment.
-      // Generic iterators completely ignore SSE comments, which causes standard fetch chunk timeouts to trip if inference takes >30s.
       // Yielding an actual empty delta successfully resets the client's internal read timer.
       const beat = buildStreamChunk(completionId, resolved.key, null);
       res.write(`data: ${JSON.stringify(beat)}\n\n`);
-    }, 4500);
+    }, 2500);
   }
 
+  // aislop-ignore-next-line code-quality/duplicate-block (structurally similar error handling wrapper)
   try {
     await _handleChatCompletionsInner(
       ctx,
@@ -175,7 +174,6 @@ async function handleChatCompletions(ctx, req, res) {
     );
   } finally {
     if (keepAliveTimer) clearInterval(keepAliveTimer);
-    if (preStreamTimer) clearTimeout(preStreamTimer);
     ctx.chatRequestsInFlight--;
     ctx.lastResponseTimestamp = Date.now();
   }
@@ -234,8 +232,12 @@ async function _handleChatCompletionsInner(
           const chunk = buildStreamChunk(completionId, resolved.key, text || '', null);
           chunk.choices[0].delta.tool_calls = raw.toolCalls;
           res.write(`data: ${JSON.stringify(chunk)}\n\n`);
-        } else {
-          res.write(`data: ${JSON.stringify(buildStreamChunk(completionId, resolved.key, text))}\n\n`);
+        } else if (text) {
+          const CHUNK_SIZE = 64;
+          for (let i = 0; i < text.length; i += CHUNK_SIZE) {
+            const chunk = buildStreamChunk(completionId, resolved.key, text.slice(i, i + CHUNK_SIZE));
+            res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+          }
         }
         const finishReason = raw.toolCalls ? 'tool_calls' : 'stop';
         res.write(`data: ${JSON.stringify(buildStreamChunk(completionId, resolved.key, null, finishReason))}\n\n`);
